@@ -13,62 +13,99 @@
             </a>
         </div>
 
+        {{-- Session Status --}}
+        @if (session('status'))
+            <div class="border border-ink bg-surface p-4 flex items-start gap-3">
+                <x-lucide-check-circle class="w-5 h-5 text-coffee flex-shrink-0 mt-0.5" />
+                <div class="font-serif text-sm text-ink">
+                    {{ session('status') }}
+                </div>
+            </div>
+        @endif
+
         {{-- 2. FORM UTAMA --}}
-        <form method="POST" action="#" class="bg-surface border border-ink">
+        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data"
+            class="bg-surface border border-ink">
             @csrf
+            @method('PATCH')
             <div class="p-6 md:p-8 space-y-8">
 
-                {{-- Seksi I: Identitas & Foto --}}
                 <div class="space-y-5">
                     <h2
                         class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
                         <x-lucide-user class="w-4 h-4 text-coffee" /> I. Identitas & Foto
                     </h2>
                     <div class="flex flex-col md:flex-row gap-6 items-start">
-                        {{-- Avatar Upload --}}
                         <div class="flex-shrink-0">
                             <div
                                 class="w-24 h-24 bg-background border border-ink rounded-full flex items-center justify-center overflow-hidden">
-                                <img src="https://i.pinimg.com/1200x/9d/a6/85/9da685aef502c3f249bd434a78bc8028.jpg"
-                                    alt="Eserel" class="w-full h-full object-cover">
+                                @if ($user->avatar && Storage::disk('public')->exists($user->avatar))
+                                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}"
+                                        class="w-full h-full object-cover"
+                                        onerror="this.parentElement.innerHTML='<x-lucide-circle-user-round class=\'w-10 h-10 text-muted\' />'">
+                                @else
+                                    <x-lucide-circle-user-round class="w-10 h-10 text-muted" />
+                                @endif
                             </div>
-                            <button type="button"
-                                class="mt-3 w-full px-3 py-1.5 border border-ink bg-surface text-xs font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-colors rounded">
+
+                            <label for="avatar-upload"
+                                class="mt-3 w-full px-3 py-1.5 border border-ink bg-surface text-xs font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-colors rounded text-center cursor-pointer block">
                                 Ganti Foto
-                            </button>
+                            </label>
+
+                            <input type="file" name="avatar" id="avatar-upload" class="hidden"
+                                accept="image/png,image/jpeg,image/jpg,image/webp">
+
+                            @error('avatar')
+                                <p class="font-mono text-[10px] text-red-700 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        {{-- Basic Info Fields --}}
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Nama
-                                    Lengkap</label>
-                                <input type="text" value="Eserel"
-                                    class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink focus:outline-none focus:ring-1 focus:ring-ink transition-all">
+                                <label for="name"
+                                    class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Nama
+                                    Lengkap <span class="text-red-700">*</span></label>
+                                <input id="name" name="name" type="text"
+                                    value="{{ old('name', $user->name) }}" required
+                                    class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all @error('name') border-red-700 @enderror">
+                                @error('name')
+                                    <p class="font-mono text-[10px] text-red-700 mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                             <div>
-                                <label
-                                    class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Email</label>
-                                <input type="email" value="eserel@scriptoria.id"
-                                    class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink focus:outline-none focus:ring-1 focus:ring-ink transition-all">
+                                <label for="email"
+                                    class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Email
+                                    <span class="text-red-700">*</span></label>
+                                <input id="email" name="email" type="email"
+                                    value="{{ old('email', $user->email) }}" required
+                                    class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all @error('email') border-red-700 @enderror">
+                                @error('email')
+                                    <p class="font-mono text-[10px] text-red-700 mt-1">{{ $message }}</p>
+                                @enderror
+                                @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
+                                    <p class="font-mono text-[10px] text-coffee mt-1">Email belum terverifikasi. <a
+                                            href="{{ route('verification.send') }}"
+                                            class="underline hover:text-ink">Kirim ulang</a></p>
+                                @endif
                             </div>
                             <div>
                                 <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">ID
                                     Pengguna</label>
-                                <input type="text" value="ADM-001" disabled
+                                <input type="text" value="USR-{{ str_pad($user->id, 3, '0', STR_PAD_LEFT) }}"
+                                    disabled
                                     class="w-full px-4 py-2.5 bg-ink/5 border border-ink text-sm font-serif text-muted cursor-not-allowed">
                             </div>
                             <div>
                                 <label
                                     class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Role</label>
-                                <input type="text" value="Admin Kurator" disabled
+                                <input type="text" value="{{ ucfirst($user->role ?? 'anggota') }}" disabled
                                     class="w-full px-4 py-2.5 bg-ink/5 border border-ink text-sm font-serif text-muted cursor-not-allowed">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Seksi II: Preferensi Tampilan --}}
                 <div class="space-y-5">
                     <h2
                         class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
@@ -76,22 +113,34 @@
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Bahasa
+                            <label for="locale"
+                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Bahasa
                                 Antarmuka</label>
-                            <select
+                            <select id="locale" name="locale"
                                 class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink focus:outline-none focus:ring-1 focus:ring-ink transition-all">
-                                <option value="id">Bahasa Indonesia</option>
-                                <option value="en">English</option>
+                                <option value="id"
+                                    {{ session('locale', app()->getLocale()) === 'id' ? 'selected' : '' }}>Bahasa
+                                    Indonesia</option>
+                                <option value="en"
+                                    {{ session('locale', app()->getLocale()) === 'en' ? 'selected' : '' }}>English
+                                </option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Zona
+                            <label for="timezone"
+                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Zona
                                 Waktu</label>
-                            <select
+                            <select id="timezone" name="timezone"
                                 class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink focus:outline-none focus:ring-1 focus:ring-ink transition-all">
-                                <option value="Asia/Jakarta">WIB (UTC+7)</option>
-                                <option value="Asia/Makassar">WITA (UTC+8)</option>
-                                <option value="Asia/Jayapura">WIT (UTC+9)</option>
+                                <option value="Asia/Jakarta"
+                                    {{ session('timezone', 'Asia/Jakarta') === 'Asia/Jakarta' ? 'selected' : '' }}>WIB
+                                    (UTC+7)</option>
+                                <option value="Asia/Makassar"
+                                    {{ session('timezone') === 'Asia/Makassar' ? 'selected' : '' }}>WITA (UTC+8)
+                                </option>
+                                <option value="Asia/Jayapura"
+                                    {{ session('timezone') === 'Asia/Jayapura' ? 'selected' : '' }}>WIT (UTC+9)
+                                </option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
@@ -100,21 +149,22 @@
                             <div class="space-y-2">
                                 <label
                                     class="flex items-center gap-3 p-3 border border-ink rounded hover:bg-ink/5 transition-colors cursor-pointer">
-                                    <input type="checkbox" checked
-                                        class="w-4 h-4 border border-ink text-ink focus:ring-ink">
+                                    <input type="checkbox" name="notifications[daily_summary]" value="1" checked
+                                        class="w-4 h-4 border border-ink text-ink focus:ring-ink rounded bg-background">
                                     <span class="font-serif text-sm text-ink">Tampilkan ringkasan transaksi
                                         harian</span>
                                 </label>
                                 <label
                                     class="flex items-center gap-3 p-3 border border-ink rounded hover:bg-ink/5 transition-colors cursor-pointer">
-                                    <input type="checkbox" checked
-                                        class="w-4 h-4 border border-ink text-ink focus:ring-ink">
+                                    <input type="checkbox" name="notifications[pending_approval]" value="1" checked
+                                        class="w-4 h-4 border border-ink text-ink focus:ring-ink rounded bg-background">
                                     <span class="font-serif text-sm text-ink">Notifikasi peminjaman menunggu
                                         verifikasi</span>
                                 </label>
                                 <label
                                     class="flex items-center gap-3 p-3 border border-ink rounded hover:bg-ink/5 transition-colors cursor-pointer">
-                                    <input type="checkbox" class="w-4 h-4 border border-ink text-ink focus:ring-ink">
+                                    <input type="checkbox" name="notifications[weekly_report]" value="1"
+                                        class="w-4 h-4 border border-ink text-ink focus:ring-ink rounded bg-background">
                                     <span class="font-serif text-sm text-ink">Email laporan mingguan (setiap
                                         Senin)</span>
                                 </label>
@@ -123,7 +173,6 @@
                     </div>
                 </div>
 
-                {{-- Seksi III: Keamanan & Sandi --}}
                 <div class="space-y-5">
                     <h2
                         class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
@@ -131,22 +180,34 @@
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Sandi Saat
+                            <label for="current_password"
+                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Sandi Saat
                                 Ini</label>
-                            <input type="password" placeholder="••••••••"
-                                class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all">
+                            <input id="current_password" name="current_password" type="password"
+                                autocomplete="current-password" placeholder="••••••••"
+                                class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all @error('current_password') border-red-700 @enderror">
+                            @error('current_password')
+                                <p class="font-mono text-[10px] text-red-700 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div></div>
                         <div>
-                            <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Sandi
+                            <label for="password"
+                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Sandi
                                 Baru</label>
-                            <input type="password" placeholder="Minimal 8 karakter"
-                                class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all">
+                            <input id="password" name="password" type="password" autocomplete="new-password"
+                                placeholder="Minimal 8 karakter"
+                                class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all @error('password') border-red-700 @enderror">
+                            @error('password')
+                                <p class="font-mono text-[10px] text-red-700 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
-                            <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Konfirmasi
+                            <label for="password_confirmation"
+                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Konfirmasi
                                 Sandi Baru</label>
-                            <input type="password" placeholder="Ulangi sandi baru"
+                            <input id="password_confirmation" name="password_confirmation" type="password"
+                                autocomplete="new-password" placeholder="Ulangi sandi baru"
                                 class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all">
                         </div>
                         <div class="md:col-span-2">
@@ -155,9 +216,11 @@
                             <div class="border border-ink p-4 bg-background">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="font-serif text-sm text-ink">Browser Chrome • Windows 11</p>
-                                        <p class="font-mono text-xs text-muted mt-1">Terakhir aktif: 07 Jun 2024, 14:30
-                                            WIB</p>
+                                        <p class="font-serif text-sm text-ink">Browser
+                                            {{ request()->userAgent() ? 'Terdeteksi' : 'Chrome' }} •
+                                            {{ request()->ip() }}</p>
+                                        <p class="font-mono text-xs text-muted mt-1">Terakhir aktif:
+                                            {{ now()->format('d M Y, H:i') }} WIB</p>
                                     </div>
                                     <span
                                         class="px-2 py-0.5 text-xs font-mono border border-ink rounded text-ink bg-surface">Sesi
@@ -165,6 +228,7 @@
                                 </div>
                             </div>
                             <button type="button"
+                                onclick="confirm('Keluar dari semua sesi lain?') || event.preventDefault()"
                                 class="mt-3 px-4 py-2 border border-ink text-xs font-serif text-coffee hover:text-red-800 hover:border-red-800 transition-colors rounded">
                                 Keluarkan Semua Sesi Lain
                             </button>
@@ -174,7 +238,6 @@
 
             </div>
 
-            {{-- FOOTER ACTIONS --}}
             <div
                 class="bg-[#f4f1eb] border-t border-ink px-6 md:px-8 py-5 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
                 <button type="reset"
@@ -188,7 +251,49 @@
             </div>
         </form>
 
-        {{-- INFO PANEL --}}
+        <div class="bg-surface border border-ink p-6">
+            <h3 class="font-serif font-semibold text-ink mb-2 flex items-center gap-2">
+                <x-lucide-trash-2 class="w-4 h-4 text-red-700" /> Hapus Akun
+            </h3>
+            <p class="font-serif text-sm text-muted mb-4">
+                Setelah akun dihapus, semua data dan riwayat peminjaman akan dihapus permanen. Tindakan ini tidak dapat
+                dibatalkan.
+            </p>
+            <button type="button" onclick="document.getElementById('delete-user-form').classList.remove('hidden')"
+                class="px-4 py-2 border border-ink text-sm font-serif text-red-700 hover:bg-red-50 hover:border-red-800 transition-colors rounded">
+                Hapus Akun Saya
+            </button>
+
+            <div id="delete-user-form" class="hidden mt-4 pt-4 border-t border-ink">
+                <form method="POST" action="{{ route('profile.destroy') }}" class="space-y-4">
+                    @csrf
+                    @method('DELETE')
+                    <div>
+                        <label for="delete-password"
+                            class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Konfirmasi Sandi
+                            <span class="text-red-700">*</span></label>
+                        <input id="delete-password" name="password" type="password" required
+                            placeholder="Masukkan sandi untuk konfirmasi"
+                            class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all @error('userDeletion.password', 'userDeletion') border-red-700 @enderror">
+                        @error('userDeletion.password', 'userDeletion')
+                            <p class="font-mono text-[10px] text-red-700 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button"
+                            onclick="document.getElementById('delete-user-form').classList.add('hidden')"
+                            class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-colors rounded">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-red-700 text-surface border border-red-700 text-sm font-serif hover:bg-red-800 transition-colors rounded">
+                            Ya, Hapus Akun
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="border border-ink bg-surface p-4 flex items-start gap-3">
             <x-lucide-info class="w-5 h-5 text-coffee flex-shrink-0 mt-0.5" />
             <div class="font-serif text-sm text-muted">
@@ -198,4 +303,37 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('avatar-upload')?.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+
+                const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+                const maxSize = 2 * 1024 * 1024; // 2MB
+
+                if (!validTypes.includes(file.type)) {
+                    alert('Format file tidak didukung. Gunakan JPG, PNG, atau WebP.');
+                    this.value = '';
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    alert('Ukuran file terlalu besar. Maksimal 2MB.');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = document.querySelector('#avatar-upload').closest('.flex-shrink-0');
+                    const previewEl = container?.querySelector('img, svg');
+                    if (previewEl) {
+                        previewEl.outerHTML =
+                            `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">`;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 </x-layouts.app>

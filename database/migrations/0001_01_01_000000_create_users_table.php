@@ -13,14 +13,33 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+
+            $table->string('name', 100);
+            $table->string('email', 191)->unique();
+            $table->string('phone', 20)->nullable()->index();
+            $table->text('address')->nullable();
+            $table->string('avatar', 255)->nullable();
+            $table->string('id_number', 100)->nullable()->unique()->index();
+
+            $table->string('role', 20)->default('anggota')->index();
+            $table->string('status', 20)->default('pending')->index();
+
+            $table->text('admin_notes')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('role', ['admin', 'petugas', 'anggota'])->default('anggota');
-            $table->enum('status', ['aktif', 'pending', 'nonaktif'])->default('pending');
+            $table->string('password', 255);
             $table->rememberToken();
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+
+            $table->softDeletes();
+
             $table->timestamps();
+
+            $table->index(['role', 'status']);
+            $table->index(['status', 'created_at']);
+            $table->index(['deleted_by']); // Index untuk audit query
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -44,8 +63,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

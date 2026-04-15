@@ -172,15 +172,6 @@
                                 class="font-serif text-sm text-ink group-hover:text-coffee transition-colors">Daftarkan
                                 Anggota</span>
                         </a>
-                        <a href="#"
-                            class="flex items-center gap-3 p-3 border border-ink/15 rounded hover:bg-ink/5 hover:border-ink/30 transition-all group">
-                            <div
-                                class="p-1.5 bg-ink/5 rounded border border-ink/15 group-hover:bg-ink/10 transition-colors">
-                                <x-lucide-barcode class="w-4 h-4 text-muted group-hover:text-ink transition-colors" />
-                            </div>
-                            <span class="font-serif text-sm text-ink group-hover:text-coffee transition-colors">Scan
-                                Kode Buku</span>
-                        </a>
                     </div>
                 </div>
 

@@ -7,33 +7,86 @@
                 <h1 class="text-3xl font-serif font-bold text-ink tracking-tight">Data Pengguna Perpustakaan</h1>
                 <p class="text-muted mt-1 font-serif">Manajemen anggota, status keanggotaan, dan riwayat akun.</p>
             </div>
-            <button
-                class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md shadow-[var(--elevation-1)] flex items-center gap-2 w-max">
-                <x-lucide-user-plus class="w-4 h-4" /> Tambah Anggota
-            </button>
+            <div class="flex gap-2">
+                <a href="{{ route('admin.users.trashed') }}"
+                    class="px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2">
+                    <x-lucide-trash-2 class="w-4 h-4" /> Data Terhapus
+                </a>
+                <a href="{{ route('admin.users.create') }}"
+                    class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md shadow-[var(--elevation-1)] flex items-center gap-2 w-max">
+                    <x-lucide-user-plus class="w-4 h-4" /> Tambah Anggota
+                </a>
+            </div>
         </div>
 
-        {{-- 2. FILTER & PENCARIAN --}}
-        <div class="bg-surface border border-ink p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <div class="relative flex-1 sm:w-64">
-                    <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-coffee/60" />
-                    <input role="text" placeholder="Cari nama atau ID anggota..."
-                        class="w-full pl-9 pr-4 py-2 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/60 focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
-                </div>
-                <select
-                    class="px-3 py-2 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
-                    <option value="">Semua Status</option>
-                    <option value="aktif">Aktif</option>
-                    <option value="pending">Pending</option>
-                    <option value="nonaktif">Nonaktif</option>
-                </select>
+        {{-- ALERT: Success Message --}}
+        @if (session('success'))
+            <div class="bg-green-50 border border-green-300 rounded-md p-4 flex items-start gap-3">
+                <x-lucide-check-circle class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <p class="font-serif text-sm text-green-800">{{ session('success') }}</p>
             </div>
-            <span class="text-xs font-mono text-muted">Menampilkan 124 dari 842 anggota</span>
-        </div>
+        @endif
+
+        {{-- 2. FILTER & PENCARIAN --}}
+        <form method="GET" action="{{ route('admin.users.index') }}" class="bg-surface border border-ink p-4">
+            <div class="flex flex-col md:flex-row gap-4 items-end">
+                <div class="flex-1">
+                    <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Pencarian</label>
+                    <div class="relative">
+                        <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-coffee/60" />
+                        <input type="text" name="search" placeholder="Cari nama, email, atau ID anggota..."
+                            class="w-full pl-9 pr-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/60 focus:outline-none focus:ring-1 focus:ring-ink rounded-md"
+                            value="{{ request('search') }}">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Status</label>
+                    <select name="status"
+                        class="px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
+                        <option value="">Semua Status</option>
+                        <option value="aktif" @selected(request('status') === 'aktif')>Aktif</option>
+                        <option value="pending" @selected(request('status') === 'pending')>Pending</option>
+                        <option value="nonaktif" @selected(request('status') === 'nonaktif')>Nonaktif</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Role</label>
+                    <select name="role"
+                        class="px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
+                        <option value="">Semua Role</option>
+                        <option value="admin" @selected(request('role') === 'admin')>Admin</option>
+                        <option value="petugas" @selected(request('role') === 'petugas')>Petugas</option>
+                        <option value="anggota" @selected(request('role') === 'anggota')>Anggota</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button type="submit"
+                        class="flex-1 md:flex-none px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center justify-center gap-2">
+                        <x-lucide-search class="w-4 h-4" /> Cari
+                    </button>
+                    @if (request('search') || request('status') || request('role'))
+                        <a href="{{ route('admin.users.index') }}"
+                            class="flex-1 md:flex-none px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md text-center">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </form>
 
         {{-- 3. TABEL DATA --}}
         <div class="bg-surface border border-ink">
+            <div class="px-6 py-4 border-b border-ink flex items-center justify-between">
+                <span class="text-xs font-mono text-muted">
+                    Menampilkan <span
+                        class="font-semibold text-ink">{{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }}</span>
+                    dari <span class="font-semibold text-ink">{{ $users->total() }}</span> anggota
+                </span>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -48,55 +101,87 @@
                                 Role</th>
                             <th class="text-center px-6 py-3 font-serif text-xs uppercase tracking-wider text-muted">
                                 Status</th>
-                            <th class="text-right px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">
+                            <th class="text-center px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">
                                 Bergabung</th>
                             <th class="text-right px-6 py-3 font-serif text-xs uppercase tracking-wider text-muted">Aksi
                             </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-ink">
-                        @forelse ($users as $user)
+                        @forelse($users as $user)
                             <tr class="hover:bg-ink/5 transition-colors">
-                                <td class="px-6 py-4 font-mono text-coffee">{{ $user->id }}</td>
-                                <td class="px-6 py-4 font-serif text-ink">{{ $user->name }}</td>
-                                <td class="px-6 py-4 font-mono text-muted text-xs">{{ $user->email }}</td>
+                                <td class="px-6 py-4 font-mono text-coffee font-semibold">{{ $user->formatted_id }}</td>
+                                <td class="px-6 py-4 font-serif text-ink">
+                                    <div class="flex items-center gap-2">
+                                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
+                                            class="w-8 h-8 rounded-full object-cover">
+                                        {{ $user->name }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 font-mono text-muted text-xs">
+                                    <div class="flex flex-col gap-1">
+                                        <span>{{ $user->email }}</span>
+                                        @if ($user->phone)
+                                            <span class="text-coffee">{{ $user->phone }}</span>
+                                        @endif
+                                    </div>
+                                </td>
                                 <td class="px-6 py-4 text-center">
                                     <span
-                                        class="px-2 py-0.5 text-xs font-mono border border-ink rounded bg-ink/5 text-coffee">{{ $user->role }}</span>
+                                        class="px-2 py-0.5 text-xs font-mono border border-ink rounded bg-ink/5 text-coffee">
+                                        {{ $user->role_label }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     @php
                                         $badge = match ($user->status) {
-                                            'aktif' => 'bg-ink/5 text-ink border-ink',
-                                            'pending' => 'bg-coffee/10 text-coffee border-coffee',
-                                            'nonaktif' => 'bg-muted/10 text-muted border-muted',
+                                            'aktif' => 'text-ink bg-green-100 border-green-300',
+                                            'pending' => 'text-coffee bg-amber-100 border-amber-300',
+                                            'nonaktif' => 'text-muted bg-gray-100 border-gray-300',
                                         };
                                     @endphp
                                     <span
-                                        class="px-2 py-0.5 text-xs font-mono border rounded uppercase tracking-wider {{ $badge }}">{{ $user->status }}</span>
+                                        class="px-2 py-0.5 text-xs font-mono border rounded uppercase tracking-wider {{ $badge }}">
+                                        {{ $user->status_label }}
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 text-right font-mono text-muted text-xs">{{ $user->created_at->format('d M Y') }}</td>
+                                <td class="px-6 py-4 text-center font-mono text-muted text-xs">
+                                    {{ $user->created_at->format('d M Y') }}
+                                </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('admin.users.show', $user->id) }}"
-                                            class="p-1.5 border border-ink/40 rounded hover:bg-ink/10 hover:border-ink transition-colors group">
+                                        <a href="{{ route('admin.users.show', $user) }}"
+                                            class="p-1.5 border border-ink rounded hover:bg-ink/5 transition-colors group"
+                                            title="Lihat Detail">
                                             <x-lucide-eye class="w-4 h-4 text-coffee/70 group-hover:text-ink" />
                                         </a>
-                                        <button
-                                            class="p-1.5 border border-ink/40 rounded hover:bg-ink/10 hover:border-ink transition-colors group">
+                                        <a href="{{ route('admin.users.edit', $user) }}"
+                                            class="p-1.5 border border-ink rounded hover:bg-ink/5 transition-colors group"
+                                            title="Edit">
                                             <x-lucide-pencil class="w-4 h-4 text-coffee/70 group-hover:text-ink" />
-                                        </button>
-                                        <button
-                                            class="p-1.5 border border-ink/40 rounded hover:bg-red-50 hover:border-red-800 transition-colors group">
-                                            <x-lucide-trash-2 class="w-4 h-4 text-coffee/70 group-hover:text-red-800" />
-                                        </button>
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+                                            class="inline"
+                                            onsubmit="return confirm('Hapus data pengguna ini? Data akan dipindahkan ke trash.')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit"
+                                                class="p-1.5 border border-ink rounded hover:bg-red-50 hover:border-red-300 transition-colors group"
+                                                title="Hapus (Soft Delete)">
+                                                <x-lucide-trash-2
+                                                    class="w-4 h-4 text-coffee/70 group-hover:text-red-700" />
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-muted font-serif">
-                                    Belum ada pengguna terdaftar.
+                                <td colspan="7" class="px-6 py-12 text-center font-serif text-muted">
+                                    <x-lucide-users class="w-8 h-8 mx-auto mb-3 opacity-40" />
+                                    <p>Belum ada data pengguna.</p>
+                                    <a href="{{ route('admin.users.create') }}"
+                                        class="text-coffee hover:text-ink mt-2 inline-block">Tambah anggota pertama
+                                        →</a>
                                 </td>
                             </tr>
                         @endforelse
@@ -105,45 +190,63 @@
             </div>
         </div>
 
-        {{-- 4. PAGINATION STATIS --}}
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
-            <span class="text-xs font-mono text-muted">Menampilkan halaman 1 dari 85</span>
-            <nav class="flex items-center gap-2">
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-muted hover:bg-ink/5 hover:text-ink transition-colors rounded disabled:opacity-50"
-                    disabled>← Prev</button>
-                <button class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">1</button>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">2</button>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">3</button>
-                <span class="text-muted">...</span>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">85</button>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
-                    →</button>
-            </nav>
-        </div>
+        {{-- Pagination --}}
+        @if ($users->hasPages())
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
+                <span class="text-xs font-mono text-muted">
+                    Halaman {{ $users->currentPage() }} dari {{ $users->lastPage() }}
+                </span>
+                <nav class="flex items-center gap-2">
+                    {{-- Previous --}}
+                    @if ($users->onFirstPage())
+                        <span
+                            class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">←
+                            Prev</span>
+                    @else
+                        <a href="{{ $users->previousPageUrl() }}"
+                            class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">←
+                            Prev</a>
+                    @endif
 
-        {{-- 5. CATATAN SISTEM / VALIDASI --}}
-        <div class="bg-surface border border-ink p-5">
-            <div class="flex items-center gap-2 mb-3">
-                <x-lucide-alert-circle class="w-4 h-4 text-coffee" />
-                <h3 class="font-serif font-semibold text-ink text-sm">Validasi Data</h3>
+                    {{-- Page Numbers --}}
+                    @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                        @if ($page == $users->currentPage())
+                            <span
+                                class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">{{ $page }}</span>
+                        @elseif ($page >= $users->currentPage() - 2 && $page <= $users->currentPage() + 2)
+                            <a href="{{ $url }}"
+                                class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    {{-- Next --}}
+                    @if ($users->hasMorePages())
+                        <a href="{{ $users->nextPageUrl() }}"
+                            class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
+                            →</a>
+                    @else
+                        <span
+                            class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">Next
+                            →</span>
+                    @endif
+                </nav>
             </div>
-            <ul class="space-y-2 font-serif text-sm text-muted">
-                <li class="flex items-start gap-2">
-                    <span class="text-coffee mt-1">•</span>
-                    <span>3 akun memerlukan verifikasi email sebelum status diubah menjadi <span
-                            class="text-ink font-semibold">Aktif</span>.</span>
-                </li>
-                <li class="flex items-start gap-2">
-                    <span class="text-coffee mt-1">•</span>
-                    <span>Kartu anggota digital dapat diunduh melalui tombol <span class="text-ink font-semibold">Aksi →
-                            Detail</span>.</span>
-                </li>
-            </ul>
+        @endif
+
+        {{-- 5. CATATAN SISTEM --}}
+        <div class="bg-blue-50 border border-blue-300 p-5 rounded-md">
+            <div class="flex items-start gap-3">
+                <x-lucide-info class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div class="font-serif text-sm text-blue-900">
+                    <p class="font-semibold mb-2">Informasi Sistem:</p>
+                    <ul class="list-disc list-inside space-y-1 ml-2">
+                        <li>Soft delete: Data yang dihapus dapat dipulihkan melalui menu <strong>Data Terhapus</strong>.
+                        </li>
+                        <li>Avatar: Jika belum diunggah, sistem akan membuat avatar otomatis dari nama pengguna.</li>
+                        <li>Tracking: Setiap perubahan data dicatat dengan ID user dan timestamp untuk audit trail.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </x-layouts.app>

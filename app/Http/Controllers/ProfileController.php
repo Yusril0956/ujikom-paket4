@@ -30,26 +30,22 @@ class ProfileController extends Controller
         $user = $request->user();
         $validated = $request->validated();
 
-        // ── Handle Avatar Upload ─────────────────────────────
         if ($request->hasFile('avatar')) {
             // Delete old avatar if exists
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                 Storage::disk('public')->delete($user->avatar);
             }
 
-            // Store new avatar
             $path = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = $path;
         }
 
-        // ── Handle Password Update (if provided) ─────────────
         if (!empty($validated['password'])) {
             $validated['password'] = bcrypt($validated['password']);
         } else {
             unset($validated['password'], $validated['current_password']);
         }
 
-        // ── Handle Email Verification Reset ──────────────────
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
@@ -72,10 +68,12 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Delete avatar file if exists
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             Storage::disk('public')->delete($user->avatar);
         }
+
+        // Set deleted_by to user's own ID for self-deletion tracking
+        $user->update(['deleted_by' => $user->id]);
 
         Auth::logout();
         $user->delete();

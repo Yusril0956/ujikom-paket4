@@ -20,24 +20,20 @@ class BookController extends Controller
     {
         $query = Book::query();
 
-        // Search
         if ($request->filled('search')) {
             $query->search($request->search);
         }
 
-        // Filter by category
         if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
 
-        // Filter by status
         if ($request->filled('status')) {
             $query->where('availability_status', $request->status);
         }
 
-        // Only show public books by default
         $query->publik();
-        $query->withoutTrashed();  // ✅ Exclude soft-deleted books
+        $query->withoutTrashed();
 
         $books = $query->orderBy('created_at', 'desc')->paginate(6)->withQueryString();
 
@@ -65,6 +61,7 @@ class BookController extends Controller
         }
 
         $validated['stock_available'] = $validated['stock_total'] ?? 1;
+        $validated['created_by'] = auth()->id();
 
         Book::create($validated);
 
@@ -77,6 +74,10 @@ class BookController extends Controller
      */
     public function show(Book $book): View
     {
+        // Only allow viewing public books, unless user is admin/petugas
+        if (!$book->is_public && !auth()->user()?->isAdmin() && !auth()->user()?->isPetugas()) {
+            abort(403, 'Anda tidak memiliki akses ke buku ini.');
+        }
         return view('pages.books.show', compact('book'));
     }
 
@@ -113,6 +114,7 @@ class BookController extends Controller
             $validated['stock_available'] = max(0, $book->stock_available + $diff);
         }
 
+        $validated['updated_by'] = auth()->id();
         $book->update($validated);
 
         return redirect()->route('books.index')
@@ -128,8 +130,8 @@ class BookController extends Controller
             Storage::disk('public')->delete($book->cover_image);
         }
 
+        $book->update(['deleted_by' => auth()->id()]);
         $book->delete();
-
 
         return redirect()->route('books.index')
             ->with('success', 'Buku berhasil dihapus dari katalog.');

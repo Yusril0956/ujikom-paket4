@@ -28,6 +28,9 @@ class Book extends Model
         'stock_total',
         'stock_available',
         'is_public',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     protected $casts = [

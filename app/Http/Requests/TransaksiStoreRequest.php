@@ -25,7 +25,8 @@ class TransaksiStoreRequest extends FormRequest
                 }
             }],
             'book_id' => ['required', 'exists:books,id', function ($attr, $value, $fail) {
-                $book = Book::find($value);
+                // Use pessimistic locking to prevent race condition
+                $book = Book::lockForUpdate()->find($value);
                 if ($book && $book->availability_status !== 'tersedia') {
                     $fail('Buku tidak tersedia untuk dipinjam.');
                 }

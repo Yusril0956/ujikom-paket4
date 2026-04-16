@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('notes')->nullable()->comment('Catatan internal admin/kurator');
             $table->text('rejection_reason')->nullable()->comment('Alasan jika ditolak');
 
-            $table->foreignId('verified_by')->nullable()->constrained('users')->comment('Admin yang menyetujui');
+            $table->foreignId('verified_by')->nullable()->constrained('users')->onDelete('set null')->comment('Admin yang menyetujui');
             $table->timestamp('verified_at')->nullable();
 
             $table->integer('fine_amount')->default(0)->comment('Nominal denda dalam rupiah');

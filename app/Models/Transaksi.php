@@ -35,10 +35,10 @@ class Transaksi extends Model
         'returned_date' => 'date',
         'pickup_deadline' => 'datetime',
         'verified_at' => 'datetime',
+        'fine_amount' => 'integer',
         'fine_paid' => 'boolean',
     ];
 
-    // ── Boot: Auto-generate booking code ─────────────────
     protected static function boot()
     {
         parent::boot();

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -27,7 +28,6 @@ class TransaksiController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Search by book title
         if ($request->filled('search')) {
             $query->whereHas('book', function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
@@ -52,7 +52,6 @@ class TransaksiController extends Controller
 
         $book = \App\Models\Book::findOrFail($validated['book_id']);
 
-        // Check if book has available stock
         if ($book->stock_available <= 0) {
             return redirect()->back()->with('error', 'Buku tidak tersedia. Silakan coba lagi nanti.');
         }
@@ -69,7 +68,7 @@ class TransaksiController extends Controller
                 ->route('anggota.transaksi')
                 ->with('success', 'Permintaan peminjaman berhasil dibuat. Tunggu persetujuan dari petugas.');
         } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('Transaksi creation failed', [
+            Log::error('Transaksi creation failed', [
                 'user_id' => $request->user()->id,
                 'book_id' => $book->id,
                 'error' => $e->getMessage()
@@ -77,43 +76,30 @@ class TransaksiController extends Controller
             return redirect()->back()
                 ->with('error', 'Gagal membuat permintaan. Hubungi administrator.');
         } catch (\Exception $e) {
-            \Log::error('Unexpected error in borrow', ['error' => $e]);
+            Log::error('Unexpected error in borrow', ['error' => $e]);
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan. Silakan coba lagi.');
         }
     }
 
-    /**
-     * Process book return (member confirmation).
-     */
+
     public function returnBook(Transaksi $transaksi, Request $request): RedirectResponse
     {
         if ($transaksi->user_id !== $request->user()->id) {
             abort(403, 'Akses ditolak.');
         }
 
-        // Only allow return for active/overdue loans
         if (!in_array($transaksi->status, ['dipinjam', 'terlambat'])) {
             return redirect()->back()->with('error', 'Buku tidak dalam status dipinjam.');
         }
 
-        // Calculate fine if overdue
-        if ($transaksi->is_overdue) {
-            $daysLate = $transaksi->due_date->diffInDays(now());
-            $transaksi->fine_amount = $daysLate * 1000; // Rp 1.000/hari
-        }
+        $success = $transaksi->returnBook();
 
-        // Update transaction
-        $transaksi->update([
-            'status' => 'dikembalikan',
-            'returned_date' => now()->toDateString(),
-        ]);
+        $message = $success
+            ? 'Pengembalian berhasil dicatat.' . ($transaksi->fine_amount > 0 ? " Denda: Rp " . number_format($transaksi->fine_amount) : '')
+            : 'Gagal memproses pengembalian.';
 
-        // Restore book stock
-        $transaksi->book->increment('stock_available');
-
-        return redirect()->back()->with('success', 'Pengembalian berhasil dicatat.' .
-            ($transaksi->fine_amount > 0 ? ' Denda: Rp ' . number_format($transaksi->fine_amount) : ''));
+        return redirect()->back()->with($success ? 'success' : 'error', $message);
     }
 
     /**

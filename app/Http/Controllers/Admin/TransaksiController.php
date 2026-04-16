@@ -35,15 +35,6 @@ class TransaksiController extends Controller
 
         $transaksi = $query->latest()->paginate(6)->withQueryString();
 
-        // ✅ FIX: Use updateOrFail instead of get()->each to avoid N+1
-        // Also run these as background jobs in production or async tasks
-        Transaksi::pending()
-            ->where('pickup_deadline', '<', now())
-            ->update(['status' => 'expired']);
-
-        Transaksi::active()
-            ->where('due_date', '<', now()->toDateString())
-            ->update(['status' => 'terlambat']);
 
         return view('pages.admin.transaksi.index', compact('transaksi'));
     }
@@ -176,6 +167,11 @@ class TransaksiController extends Controller
             ->where('booking_code', $bookingCode)
             ->firstOrFail();
 
+        // Authorization: Only user, admin, or petugas can view
+        if (auth()->id() !== $transaksi->user_id && !auth()->user()->isPetugas() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this receipt.');
+        }
+
         return view('pages.admin.transaksi.bukti', compact('transaksi'));
     }
 
@@ -185,7 +181,6 @@ class TransaksiController extends Controller
      */
     public function export(Request $request)
     {
-        // Simple CSV export (could use Laravel Excel for advanced)
         $transaksis = Transaksi::with(['user', 'book'])
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->get();

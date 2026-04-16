@@ -20,7 +20,7 @@ Route::middleware(['auth', 'role:admin,petugas'])
         // ─────────────────────────────────────────────────────
         Route::get('/dashboard', function () {
             $totalBooks = \App\Models\Book::count();
-            $activeMembers = \App\Models\User::where('role', 'anggota')->where('status', 'active')->count();
+            $activeMembers = \App\Models\User::where('role', 'anggota')->where('status', 'aktif')->count();
             $borrowedToday = \App\Models\Transaksi::whereDate('created_at', today())->where('status', 'dipinjam')->count();
             $overdueCount = \App\Models\Transaksi::where('status', 'terlambat')->count();
             $recentTransactions = \App\Models\Transaksi::with(['user', 'book'])
@@ -74,6 +74,7 @@ Route::middleware(['auth', 'role:admin,petugas'])
             Route::post('/', [BookController::class, 'store'])->name('store');
             Route::get('/{book}/edit', [BookController::class, 'edit'])->name('edit');
             Route::put('/{book}', [BookController::class, 'update'])->name('update');
+            Route::patch('/{book}/toggle-visibility', [BookController::class, 'toggleVisibility'])->name('toggle-visibility');
             Route::delete('/{book}', [BookController::class, 'destroy'])->name('destroy');
         });
 
@@ -81,6 +82,8 @@ Route::middleware(['auth', 'role:admin,petugas'])
         // TRANSACTION MANAGEMENT
         // ─────────────────────────────────────────────────────
         Route::prefix('transaksi')->name('transaksi.')->group(function () {
+            Route::get('/export/data', [TransaksiController::class, 'export'])->name('export');
+
             Route::get('/', [TransaksiController::class, 'index'])->name('index');
             Route::get('/create', [TransaksiController::class, 'create'])->name('create');
             Route::post('/', [TransaksiController::class, 'store'])->name('store');
@@ -90,9 +93,6 @@ Route::middleware(['auth', 'role:admin,petugas'])
             Route::patch('/{transaksi}/approve', [TransaksiController::class, 'approve'])->name('approve');
             Route::patch('/{transaksi}/reject', [TransaksiController::class, 'reject'])->name('reject');
             Route::patch('/{transaksi}/return', [TransaksiController::class, 'returnBook'])->name('return');
-
-            // Data export
-            Route::get('/export/data', [TransaksiController::class, 'export'])->name('export');
         });
 
     });

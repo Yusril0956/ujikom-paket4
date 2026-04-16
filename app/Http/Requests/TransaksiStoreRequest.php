@@ -33,8 +33,8 @@ class TransaksiStoreRequest extends FormRequest
                     $fail('Stok buku habis.');
                 }
             }],
-            'borrowed_date' => 'required|date|before_or_equal:today',
-            'due_date' => 'required|date|after:borrowed_date',
+            'borrowed_date' => 'nullable|date|before_or_equal:today',
+            'due_date' => 'nullable|date|after_or_equal:borrowed_date',
             'notes' => 'nullable|string|max:500',
         ];
     }

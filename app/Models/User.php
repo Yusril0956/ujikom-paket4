@@ -154,6 +154,30 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user who created this record
+     */
+    public function createdByUser()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the user who last updated this record
+     */
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Get the user who deleted this record (soft delete)
+     */
+    public function deletedByUser()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    /**
      * Check if user is admin
      */
     public function isAdmin(): bool

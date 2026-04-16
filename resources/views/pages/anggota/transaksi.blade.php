@@ -54,7 +54,7 @@
                     {{-- Left: Book Info --}}
                     <div class="flex items-start gap-4 flex-1">
                         <div class="w-12 h-16 bg-background border border-ink flex-shrink-0 flex items-center justify-center rounded">
-                            @if($txn->book->cover_image)
+                            @if($txn->book?->cover_image)
                             <img src="{{ $txn->book->cover_image }}"
                                 alt="{{ $txn->book->title }}"
                                 class="w-full h-full object-cover rounded">
@@ -63,8 +63,12 @@
                             @endif
                         </div>
                         <div>
-                            <h3 class="font-serif font-semibold text-ink text-base leading-tight">{{ $txn->book->title }}</h3>
-                            <p class="font-mono text-[10px] text-coffee mt-1">{{ $txn->book->author }} • ID: {{ $txn->book->formatted_id }}</p>
+                            @if($txn->book)
+                                <h3 class="font-serif font-semibold text-ink text-base leading-tight">{{ $txn->book->title }}</h3>
+                                <p class="font-mono text-[10px] text-coffee mt-1">{{ $txn->book->author }} • ID: {{ $txn->book->formatted_id }}</p>
+                            @else
+                                <h3 class="font-serif font-semibold text-muted/50 text-base leading-tight italic">[Buku Dihapus]</h3>
+                            @endif
                             <p class="font-mono text-[10px] text-muted mt-0.5">Booking: {{ $txn->booking_code ?? '-' }}</p>
                         </div>
                     </div>

@@ -21,8 +21,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="border border-ink p-4">
                         <p class="font-mono text-[10px] uppercase tracking-wider text-muted mb-1">Judul Buku</p>
-                        <p class="font-serif text-ink font-semibold text-base">{{ $transaksi->book->title }}</p>
-                        <p class="font-mono text-xs text-coffee mt-1">{{ $transaksi->book->formatted_id }} | Penulis: {{ $transaksi->book->author }}</p>
+                        @if($transaksi->book)
+                            <p class="font-serif text-ink font-semibold text-base">{{ $transaksi->book->title }}</p>
+                            <p class="font-mono text-xs text-coffee mt-1">{{ $transaksi->book->formatted_id }} | Penulis: {{ $transaksi->book->author }}</p>
+                        @else
+                            <p class="font-serif text-muted/50 italic">[Buku Dihapus]</p>
+                        @endif
                     </div>
                     <div class="border border-ink p-4">
                         <p class="font-mono text-[10px] uppercase tracking-wider text-muted mb-1">Peminjam</p>

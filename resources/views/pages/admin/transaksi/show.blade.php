@@ -44,8 +44,12 @@
                         </div>
                         <div>
                             <p class="font-mono text-xs uppercase tracking-wider text-coffee mb-1">Buku Dipinjam</p>
-                            <p class="font-serif text-ink">{{ $transaksi->book->title }}</p>
-                            <p class="font-mono text-xs text-muted mt-1">ISBN: {{ $transaksi->book->isbn }} | Rak: {{ $transaksi->book->location }}</p>
+                            @if($transaksi->book)
+                                <p class="font-serif text-ink">{{ $transaksi->book->title }}</p>
+                                <p class="font-mono text-xs text-muted mt-1">ISBN: {{ $transaksi->book->isbn }} | Rak: {{ $transaksi->book->location }}</p>
+                            @else
+                                <p class="font-serif text-muted/50 italic">[Buku Dihapus]</p>
+                            @endif
                         </div>
                         <div>
                             <p class="font-mono text-xs uppercase tracking-wider text-coffee mb-1">Petugas Pencatat</p>

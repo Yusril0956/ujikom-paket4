@@ -74,7 +74,13 @@
                                     <p class="font-mono text-[10px] text-coffee mt-1">{{ $txn->booking_code }}</p>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 font-serif text-muted">{{ $txn->book->title }}</td>
+                            <td class="px-6 py-4 font-serif text-muted">
+                                @if($txn->book)
+                                    {{ $txn->book->title }}
+                                @else
+                                    <span class="text-muted/50 italic">[Buku Dihapus]</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-center font-mono text-muted">
                                 {{ $txn->borrowed_date?->format('d M Y') ?? '-' }}</td>
                             <td

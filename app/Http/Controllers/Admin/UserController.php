@@ -7,6 +7,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -56,13 +57,21 @@ class UserController extends Controller
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
+            if ($request->input('user_id')) {
+                $oldUser = User::find($request->input('user_id'));
+                if ($oldUser && $oldUser->avatar) {
+                    try {
+                        Storage::disk('public')->delete($oldUser->avatar);
+                    } catch (\Exception $e) {
+                        Log::warning('Failed to delete avatar: ' . $e->getMessage());
+                    }
+                }
+            }
             $validated['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
-        // Hash password
         $validated['password'] = Hash::make($validated['password']);
 
-        // Set created_by
         $validated['created_by'] = auth()->id();
 
         $user = User::create($validated);
@@ -94,23 +103,19 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
-        // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            // Delete old avatar
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
             $validated['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
-        // Handle password update
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
         }
 
-        // Set updated_by
         $validated['updated_by'] = auth()->id();
 
         $user->update($validated);

@@ -82,7 +82,7 @@ class TransaksiController extends Controller
 
             $book->decrement('stock_available');
 
-            if ($book->stock_available - 1 <= 0) {
+            if ($book->stock_available <= 0) {
                 $book->update(['availability_status' => 'dipinjam']);
             }
 

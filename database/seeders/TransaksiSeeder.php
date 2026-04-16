@@ -21,12 +21,10 @@ class TransaksiSeeder extends Seeder
         $admin = User::where('role', 'admin')->first();
 
         if ($users->isEmpty() || $books->isEmpty()) {
-            $this->command->warn('UserSeeder atau BookSeeder belum dijalankan!');
-            return;
+            throw new \Exception('UserSeeder dan BookSeeder harus dijalankan terlebih dahulu!');
         }
 
         $transaksis = [
-            // Transaksi 1: Pending (baru saja)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -43,7 +41,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 0,
                 'fine_paid' => false,
             ],
-            // Transaksi 2: Pending (akan expired)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -60,7 +57,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 0,
                 'fine_paid' => false,
             ],
-            // Transaksi 3: Dipinjam (normal, waktu kembali masih lama)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -77,7 +73,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 0,
                 'fine_paid' => false,
             ],
-            // Transaksi 4: Dipinjam (normal)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -94,7 +89,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 0,
                 'fine_paid' => false,
             ],
-            // Transaksi 5: Terlambat (sudah overdue)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -111,7 +105,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 2000,
                 'fine_paid' => false,
             ],
-            // Transaksi 6: Terlambat (2 hari overdue)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -128,7 +121,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 2000,
                 'fine_paid' => false,
             ],
-            // Transaksi 7: Dikembalikan (tepat waktu)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -145,7 +137,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 0,
                 'fine_paid' => false,
             ],
-            // Transaksi 8: Dikembalikan (terlambat tapi bayar denda)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -162,7 +153,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 4000,
                 'fine_paid' => true,
             ],
-            // Transaksi 9: Ditolak
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,
@@ -179,7 +169,6 @@ class TransaksiSeeder extends Seeder
                 'fine_amount' => 0,
                 'fine_paid' => false,
             ],
-            // Transaksi 10: Ditolak (kuota penuh)
             [
                 'user_id' => $users->random()->id,
                 'book_id' => $books->random()->id,

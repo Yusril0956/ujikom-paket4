@@ -6,6 +6,8 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -31,9 +33,12 @@ class ProfileController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
+            if ($user->avatar) {
+                try {
+                    Storage::disk('public')->delete($user->avatar);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to delete avatar: ' . $e->getMessage());
+                }
             }
 
             $path = $request->file('avatar')->store('avatars', 'public');
@@ -41,7 +46,7 @@ class ProfileController extends Controller
         }
 
         if (!empty($validated['password'])) {
-            $validated['password'] = bcrypt($validated['password']);
+            $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password'], $validated['current_password']);
         }
@@ -68,11 +73,14 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($user->avatar) {
+            try {
+                Storage::disk('public')->delete($user->avatar);
+            } catch (\Exception $e) {
+                Log::warning('Failed to delete avatar: ' . $e->getMessage());
+            }
         }
 
-        // Set deleted_by to user's own ID for self-deletion tracking
         $user->update(['deleted_by' => $user->id]);
 
         Auth::logout();

@@ -21,10 +21,10 @@
 
         {{-- ALERT: Success Message --}}
         @if (session('success'))
-            <div class="bg-green-50 border border-green-300 rounded-md p-4 flex items-start gap-3">
-                <x-lucide-check-circle class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <p class="font-serif text-sm text-green-800">{{ session('success') }}</p>
-            </div>
+        <div class="bg-green-50 border border-green-300 rounded-md p-4 flex items-start gap-3">
+            <x-lucide-check-circle class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+            <p class="font-serif text-sm text-green-800">{{ session('success') }}</p>
+        </div>
         @endif
 
         {{-- 2. FILTER & PENCARIAN --}}
@@ -45,9 +45,9 @@
                     <select name="status"
                         class="px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
                         <option value="">Semua Status</option>
-                        <option value="aktif" @selected(request('status') === 'aktif')>Aktif</option>
-                        <option value="pending" @selected(request('status') === 'pending')>Pending</option>
-                        <option value="nonaktif" @selected(request('status') === 'nonaktif')>Nonaktif</option>
+                        <option value="aktif" @selected(request('status')==='aktif' )>Aktif</option>
+                        <option value="pending" @selected(request('status')==='pending' )>Pending</option>
+                        <option value="nonaktif" @selected(request('status')==='nonaktif' )>Nonaktif</option>
                     </select>
                 </div>
 
@@ -56,9 +56,9 @@
                     <select name="role"
                         class="px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
                         <option value="">Semua Role</option>
-                        <option value="admin" @selected(request('role') === 'admin')>Admin</option>
-                        <option value="petugas" @selected(request('role') === 'petugas')>Petugas</option>
-                        <option value="anggota" @selected(request('role') === 'anggota')>Anggota</option>
+                        <option value="admin" @selected(request('role')==='admin' )>Admin</option>
+                        <option value="petugas" @selected(request('role')==='petugas' )>Petugas</option>
+                        <option value="anggota" @selected(request('role')==='anggota' )>Anggota</option>
                     </select>
                 </div>
 
@@ -68,10 +68,10 @@
                         <x-lucide-search class="w-4 h-4" /> Cari
                     </button>
                     @if (request('search') || request('status') || request('role'))
-                        <a href="{{ route('admin.users.index') }}"
-                            class="flex-1 md:flex-none px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md text-center">
-                            Reset
-                        </a>
+                    <a href="{{ route('admin.users.index') }}"
+                        class="flex-1 md:flex-none px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md text-center">
+                        Reset
+                    </a>
                     @endif
                 </div>
             </div>
@@ -109,81 +109,85 @@
                     </thead>
                     <tbody class="divide-y divide-ink">
                         @forelse($users as $user)
-                            <tr class="hover:bg-ink/5 transition-colors">
-                                <td class="px-6 py-4 font-mono text-coffee font-semibold">{{ $user->formatted_id }}</td>
-                                <td class="px-6 py-4 font-serif text-ink">
-                                    <div class="flex items-center gap-2">
-                                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
+                        <tr class="hover:bg-ink/5 transition-colors">
+                            <td class="px-6 py-4 font-mono text-coffee font-semibold">{{ $user->formatted_id }}</td>
+                            <td class="px-6 py-4 font-serif text-ink">
+                                <div class="flex items-center gap-2">
+                                    @if ($user->avatar && Storage::disk('public')->exists($user->avatar))
+                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}"
                                             class="w-8 h-8 rounded-full object-cover">
                                         {{ $user->name }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 font-mono text-muted text-xs">
-                                    <div class="flex flex-col gap-1">
-                                        <span>{{ $user->email }}</span>
-                                        @if ($user->phone)
-                                            <span class="text-coffee">{{ $user->phone }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span
-                                        class="px-2 py-0.5 text-xs font-mono border border-ink rounded bg-ink/5 text-coffee">
-                                        {{ $user->role_label }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    @php
-                                        $badge = match ($user->status) {
-                                            'aktif' => 'text-ink bg-green-100 border-green-300',
-                                            'pending' => 'text-coffee bg-amber-100 border-amber-300',
-                                            'nonaktif' => 'text-muted bg-gray-100 border-gray-300',
-                                        };
-                                    @endphp
-                                    <span
-                                        class="px-2 py-0.5 text-xs font-mono border rounded uppercase tracking-wider {{ $badge }}">
-                                        {{ $user->status_label }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-center font-mono text-muted text-xs">
-                                    {{ $user->created_at->format('d M Y') }}
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('admin.users.show', $user) }}"
-                                            class="p-1.5 border border-ink rounded hover:bg-ink/5 transition-colors group"
-                                            title="Lihat Detail">
-                                            <x-lucide-eye class="w-4 h-4 text-coffee/70 group-hover:text-ink" />
-                                        </a>
-                                        <a href="{{ route('admin.users.edit', $user) }}"
-                                            class="p-1.5 border border-ink rounded hover:bg-ink/5 transition-colors group"
-                                            title="Edit">
-                                            <x-lucide-pencil class="w-4 h-4 text-coffee/70 group-hover:text-ink" />
-                                        </a>
-                                        <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                            class="inline"
-                                            onsubmit="return confirm('Hapus data pengguna ini? Data akan dipindahkan ke trash.')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit"
-                                                class="p-1.5 border border-ink rounded hover:bg-red-50 hover:border-red-300 transition-colors group"
-                                                title="Hapus (Soft Delete)">
-                                                <x-lucide-trash-2
-                                                    class="w-4 h-4 text-coffee/70 group-hover:text-red-700" />
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                                    @else
+                                        <x-lucide-circle-user-round class="w-10 h-10 text-muted" />
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 font-mono text-muted text-xs">
+                                <div class="flex flex-col gap-1">
+                                    <span>{{ $user->email }}</span>
+                                    @if ($user->phone)
+                                    <span class="text-coffee">{{ $user->phone }}</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span
+                                    class="px-2 py-0.5 text-xs font-mono border border-ink rounded bg-ink/5 text-coffee">
+                                    {{ $user->role_label }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                @php
+                                $badge = match ($user->status) {
+                                'aktif' => 'text-ink bg-green-100 border-green-300',
+                                'pending' => 'text-coffee bg-amber-100 border-amber-300',
+                                'nonaktif' => 'text-muted bg-gray-100 border-gray-300',
+                                };
+                                @endphp
+                                <span
+                                    class="px-2 py-0.5 text-xs font-mono border rounded uppercase tracking-wider {{ $badge }}">
+                                    {{ $user->status_label }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center font-mono text-muted text-xs">
+                                {{ $user->created_at->format('d M Y') }}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.users.show', $user) }}"
+                                        class="p-1.5 border border-ink rounded hover:bg-ink/5 transition-colors group"
+                                        title="Lihat Detail">
+                                        <x-lucide-eye class="w-4 h-4 text-coffee/70 group-hover:text-ink" />
+                                    </a>
+                                    <a href="{{ route('admin.users.edit', $user) }}"
+                                        class="p-1.5 border border-ink rounded hover:bg-ink/5 transition-colors group"
+                                        title="Edit">
+                                        <x-lucide-pencil class="w-4 h-4 text-coffee/70 group-hover:text-ink" />
+                                    </a>
+                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+                                        class="inline"
+                                        onsubmit="return confirm('Hapus data pengguna ini? Data akan dipindahkan ke trash.')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit"
+                                            class="p-1.5 border border-ink rounded hover:bg-red-50 hover:border-red-300 transition-colors group"
+                                            title="Hapus (Soft Delete)">
+                                            <x-lucide-trash-2
+                                                class="w-4 h-4 text-coffee/70 group-hover:text-red-700" />
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="7" class="px-6 py-12 text-center font-serif text-muted">
-                                    <x-lucide-users class="w-8 h-8 mx-auto mb-3 opacity-40" />
-                                    <p>Belum ada data pengguna.</p>
-                                    <a href="{{ route('admin.users.create') }}"
-                                        class="text-coffee hover:text-ink mt-2 inline-block">Tambah anggota pertama
-                                        →</a>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center font-serif text-muted">
+                                <x-lucide-users class="w-8 h-8 mx-auto mb-3 opacity-40" />
+                                <p>Belum ada data pengguna.</p>
+                                <a href="{{ route('admin.users.create') }}"
+                                    class="text-coffee hover:text-ink mt-2 inline-block">Tambah anggota pertama
+                                    →</a>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -192,45 +196,45 @@
 
         {{-- Pagination --}}
         @if ($users->hasPages())
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
-                <span class="text-xs font-mono text-muted">
-                    Halaman {{ $users->currentPage() }} dari {{ $users->lastPage() }}
-                </span>
-                <nav class="flex items-center gap-2">
-                    {{-- Previous --}}
-                    @if ($users->onFirstPage())
-                        <span
-                            class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">←
-                            Prev</span>
-                    @else
-                        <a href="{{ $users->previousPageUrl() }}"
-                            class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">←
-                            Prev</a>
-                    @endif
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
+            <span class="text-xs font-mono text-muted">
+                Halaman {{ $users->currentPage() }} dari {{ $users->lastPage() }}
+            </span>
+            <nav class="flex items-center gap-2">
+                {{-- Previous --}}
+                @if ($users->onFirstPage())
+                <span
+                    class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">←
+                    Prev</span>
+                @else
+                <a href="{{ $users->previousPageUrl() }}"
+                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">←
+                    Prev</a>
+                @endif
 
-                    {{-- Page Numbers --}}
-                    @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
-                        @if ($page == $users->currentPage())
-                            <span
-                                class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">{{ $page }}</span>
-                        @elseif ($page >= $users->currentPage() - 2 && $page <= $users->currentPage() + 2)
-                            <a href="{{ $url }}"
-                                class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">{{ $page }}</a>
-                        @endif
+                {{-- Page Numbers --}}
+                @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                @if ($page == $users->currentPage())
+                <span
+                    class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">{{ $page }}</span>
+                @elseif ($page >= $users->currentPage() - 2 && $page <= $users->currentPage() + 2)
+                    <a href="{{ $url }}"
+                        class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">{{ $page }}</a>
+                    @endif
                     @endforeach
 
                     {{-- Next --}}
                     @if ($users->hasMorePages())
-                        <a href="{{ $users->nextPageUrl() }}"
-                            class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
-                            →</a>
+                    <a href="{{ $users->nextPageUrl() }}"
+                        class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
+                        →</a>
                     @else
-                        <span
-                            class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">Next
-                            →</span>
+                    <span
+                        class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">Next
+                        →</span>
                     @endif
-                </nav>
-            </div>
+            </nav>
+        </div>
         @endif
 
         {{-- 5. CATATAN SISTEM --}}

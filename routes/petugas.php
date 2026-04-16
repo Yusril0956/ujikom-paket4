@@ -19,7 +19,33 @@ Route::middleware(['auth', 'role:admin,petugas'])
         // DASHBOARD
         // ─────────────────────────────────────────────────────
         Route::get('/dashboard', function () {
-            return view('pages.admin.dashboard');
+            $totalBooks = \App\Models\Book::count();
+            $activeMembers = \App\Models\User::where('role', 'anggota')->where('status', 'active')->count();
+            $borrowedToday = \App\Models\Transaksi::whereDate('created_at', today())->where('status', 'dipinjam')->count();
+            $overdueCount = \App\Models\Transaksi::where('status', 'terlambat')->count();
+            $recentTransactions = \App\Models\Transaksi::with(['user', 'book'])
+                ->latest('created_at')
+                ->limit(5)
+                ->get();
+            
+            // Additional stats for trends
+            $newBooksThisMonth = \App\Models\Book::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count();
+            $newMembersThisMonth = \App\Models\User::where('role', 'anggota')
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count();
+            
+            return view('pages.admin.dashboard', compact(
+                'totalBooks',
+                'activeMembers',
+                'borrowedToday',
+                'overdueCount',
+                'recentTransactions',
+                'newBooksThisMonth',
+                'newMembersThisMonth'
+            ));
         })->name('dashboard');
 
         // ─────────────────────────────────────────────────────

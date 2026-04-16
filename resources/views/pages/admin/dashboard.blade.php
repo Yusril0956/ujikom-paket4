@@ -25,31 +25,31 @@
                 $stats = [
                     [
                         'label' => 'Total Koleksi',
-                        'value' => '12,458',
+                        'value' => number_format($totalBooks),
                         'icon' => 'book-open',
-                        'trend' => '+24 buku',
+                        'trend' => $newBooksThisMonth > 0 ? "+{$newBooksThisMonth} bulan ini" : 'Stabil',
                         'color' => 'text-coffee',
                     ],
                     [
                         'label' => 'Anggota Aktif',
-                        'value' => '842',
+                        'value' => number_format($activeMembers),
                         'icon' => 'users',
-                        'trend' => '+12 baru',
+                        'trend' => $newMembersThisMonth > 0 ? "+{$newMembersThisMonth} baru" : 'Stabil',
                         'color' => 'text-ink',
                     ],
                     [
                         'label' => 'Dipinjam Hari Ini',
-                        'value' => '67',
+                        'value' => $borrowedToday,
                         'icon' => 'arrow-right-left',
                         'trend' => 'Sedang berjalan',
                         'color' => 'text-coffee',
                     ],
                     [
                         'label' => 'Jatuh Tempo',
-                        'value' => '9',
+                        'value' => $overdueCount,
                         'icon' => 'alert-circle',
-                        'trend' => 'Perlu tindak lanjut',
-                        'color' => 'text-red-700',
+                        'trend' => $overdueCount > 0 ? 'Perlu tindak lanjut' : 'Aman',
+                        'color' => $overdueCount > 0 ? 'text-red-700' : 'text-green-700',
                     ],
                 ];
             @endphp
@@ -82,7 +82,7 @@
             <div class="lg:col-span-2 bg-surface border border-ink">
                 <div class="px-6 py-4 border-b border-ink flex items-center justify-between">
                     <h2 class="font-serif text-lg font-bold text-ink">Transaksi Peminjaman</h2>
-                    <a href="#"
+                    <a href="{{ route('admin.transaksi.index') }}"
                         class="text-xs font-mono uppercase tracking-widest text-coffee hover:text-ink transition-colors">Lihat
                         Arsip ›</a>
                 </div>
@@ -104,42 +104,32 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-ink/10">
-                            <tr class="hover:bg-ink/5 transition-colors">
-                                <td class="px-6 py-4 font-mono text-coffee">#BRW-8842</td>
-                                <td class="px-6 py-4 font-serif text-ink">Alya Rahmawati</td>
-                                <td class="px-6 py-4 font-serif text-muted">Filosofi Teras</td>
-                                <td class="px-6 py-4 text-center"><span
-                                        class="px-2 py-0.5 text-xs font-mono border border-ink/20 rounded bg-ink/5 text-ink">Dipinjam</span>
-                                </td>
-                                <td class="px-6 py-4 text-right font-mono text-muted">14 Jun 2024</td>
-                            </tr>
-                            <tr class="hover:bg-ink/5 transition-colors">
-                                <td class="px-6 py-4 font-mono text-coffee">#BRW-8841</td>
-                                <td class="px-6 py-4 font-serif text-ink">Budi Santoso</td>
-                                <td class="px-6 py-4 font-serif text-muted">Laut Bercerita</td>
-                                <td class="px-6 py-4 text-center"><span
-                                        class="px-2 py-0.5 text-xs font-mono border border-green-700/30 rounded bg-green-700/5 text-green-800">Dikembalikan</span>
-                                </td>
-                                <td class="px-6 py-4 text-right font-mono text-muted">07 Jun 2024</td>
-                            </tr>
-                            <tr class="hover:bg-ink/5 transition-colors">
-                                <td class="px-6 py-4 font-mono text-coffee">#BRW-8840</td>
-                                <td class="px-6 py-4 font-serif text-ink">Citra Dewi</td>
-                                <td class="px-6 py-4 font-serif text-muted">Sapiens: Riwayat Singkat</td>
-                                <td class="px-6 py-4 text-center"><span
-                                        class="px-2 py-0.5 text-xs font-mono border border-red-700/30 rounded bg-red-700/5 text-red-800">Terlambat</span>
-                                </td>
-                                <td class="px-6 py-4 text-right font-mono text-red-700 font-medium">01 Jun 2024</td>
-                            </tr>
-                            <tr class="hover:bg-ink/5 transition-colors">
-                                <td class="px-6 py-4 font-mono text-coffee">#BRW-8839</td>
-                                <td class="px-6 py-4 font-serif text-ink">Dimas Pratama</td>
-                                <td class="px-6 py-4 font-serif text-muted">Atomic Habits</td>
-                                <td class="px-6 py-4 text-center"><span
-                                        class="px-2 py-0.5 text-xs font-mono border border-ink/20 rounded bg-ink/5 text-ink">Dipinjam</span>
-                                </td>
-                                <td class="px-6 py-4 text-right font-mono text-muted">10 Jun 2024</td>
-                            </tr>
+                            @forelse($recentTransactions as $transaction)
+                                <tr class="hover:bg-ink/5 transition-colors">
+                                    <td class="px-6 py-4 font-mono text-coffee">{{ $transaction->formatted_id }}</td>
+                                    <td class="px-6 py-4 font-serif text-ink">{{ $transaction->user?->name ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 font-serif text-muted">{{ $transaction->book?->title ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        @php
+                                            $statusConfig = [
+                                                'pending' => ['bg' => 'bg-yellow-700/5', 'border' => 'border-yellow-700/30', 'text' => 'text-yellow-800', 'label' => 'Menunggu'],
+                                                'dipinjam' => ['bg' => 'bg-ink/5', 'border' => 'border-ink/20', 'text' => 'text-ink', 'label' => 'Dipinjam'],
+                                                'dikembalikan' => ['bg' => 'bg-green-700/5', 'border' => 'border-green-700/30', 'text' => 'text-green-800', 'label' => 'Dikembalikan'],
+                                                'terlambat' => ['bg' => 'bg-red-700/5', 'border' => 'border-red-700/30', 'text' => 'text-red-800', 'label' => 'Terlambat'],
+                                            ];
+                                            $config = $statusConfig[$transaction->status] ?? $statusConfig['pending'];
+                                        @endphp
+                                        <span class="px-2 py-0.5 text-xs font-mono border {{ $config['border'] }} rounded {{ $config['bg'] }} {{ $config['text'] }}">
+                                            {{ $config['label'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right font-mono text-muted">{{ $transaction->due_date?->format('d M Y') ?? '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-muted">Tidak ada transaksi.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -153,7 +143,7 @@
                         <h3 class="font-serif font-semibold text-ink">Aksi Cepat</h3>
                     </div>
                     <div class="p-4 space-y-3">
-                        <a href="#"
+                        <a href="{{ route('admin.books.create') }}"
                             class="flex items-center gap-3 p-3 border border-ink/15 rounded hover:bg-ink/5 hover:border-ink/30 transition-all group">
                             <div
                                 class="p-1.5 bg-coffee/10 rounded border border-coffee/20 group-hover:bg-coffee/20 transition-colors">
@@ -162,7 +152,7 @@
                             <span class="font-serif text-sm text-ink group-hover:text-coffee transition-colors">Input
                                 Buku Baru</span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route('admin.users.create') }}"
                             class="flex items-center gap-3 p-3 border border-ink/15 rounded hover:bg-ink/5 hover:border-ink/30 transition-all group">
                             <div
                                 class="p-1.5 bg-ink/5 rounded border border-ink/15 group-hover:bg-ink/10 transition-colors">

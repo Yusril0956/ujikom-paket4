@@ -15,29 +15,27 @@
 
 <body class="bg-background text-ink antialiased">
 
-    {{-- 1. NAVBAR --}}
+    {{-- 1. navbar --}}
     <nav class="fixed top-0 w-full bg-surface/95 backdrop-blur-sm border-b border-ink z-50" aria-label="Navigasi Utama">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                {{-- Logo --}}
+
                 <a href="/" class="flex items-center gap-2 group">
                     <x-lucide-book-open
                         class="w-6 h-6 text-ink stroke-[1.5] group-hover:text-coffee transition-colors" />
                     <span class="font-serif text-lg font-bold tracking-[0.1em] uppercase text-ink">Scriptoria</span>
                 </a>
 
-                {{-- Desktop Links --}}
                 <div class="hidden md:flex items-center gap-6">
                     <a href="#features"
                         class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Fitur</a>
                     <a href="#how-it-works"
                         class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Cara
                         Kerja</a>
-                    <a href="{{ url('/about') }}"
+                    <a href="{{ route('about') }}"
                         class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tentang</a>
                 </div>
 
-                {{-- Auth Buttons --}}
                 <div class="flex items-center gap-3">
                     @auth
                         @php
@@ -73,7 +71,7 @@
         </div>
     </nav>
 
-    {{-- 2. HERO SECTION --}}
+    {{-- 2. hero --}}
     <header class="relative pt-32 pb-20 px-4 border-b border-ink">
         <div class="max-w-4xl mx-auto text-center">
             <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface border border-ink rounded mb-6">
@@ -89,15 +87,18 @@
                 mengatalogisasi, dan memudahkan akses terhadap koleksi buku fisik maupun digital.
             </p>
             <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('register') }}"
-                    class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
-                    <x-lucide-user-plus class="w-4 h-4" /> Mulai Bergabung
-                </a>
+                @guest
+                    <a href="{{ route('register') }}"
+                        class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
+                        <x-lucide-user-plus class="w-4 h-4" /> Mulai Bergabung
+                    </a>
+                @endguest
+
                 <a href="#features"
                     class="px-6 py-3 bg-surface text-ink border border-ink font-serif hover:bg-ink/5 transition-colors rounded flex items-center justify-center gap-2">
                     <x-lucide-arrow-down class="w-4 h-4" /> Pelajari Lebih Lanjut
                 </a>
-                <a href="{{ url('/katalog') }}"
+                <a href="{{ route('books.index') }}"
                     class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
                     <x-lucide-book class="w-4 h-4" /> Lihat Koleksi
                 </a>
@@ -105,7 +106,7 @@
         </div>
     </header>
 
-    {{-- 3. FEATURES SECTION --}}
+    {{-- 3. fitur --}}
     <section id="features" class="py-20 px-4 border-b border-ink bg-surface">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
@@ -114,7 +115,7 @@
                     arsip, katalogisasi, dan peminjaman yang terstruktur.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {{-- Card 1 --}}
+                
                 <div class="bg-background border border-ink p-6 hover:border-coffee transition-colors">
                     <div class="w-10 h-10 bg-surface border border-ink rounded flex items-center justify-center mb-4">
                         <x-lucide-book-open class="w-5 h-5 text-ink" />
@@ -123,7 +124,7 @@
                     <p class="font-serif text-sm text-muted leading-relaxed">Pencarian cepat berdasarkan judul, penulis,
                         ISBN, atau klasifikasi DDC/LCC dengan metadata yang lengkap.</p>
                 </div>
-                {{-- Card 2 --}}
+                
                 <div class="bg-background border border-ink p-6 hover:border-coffee transition-colors">
                     <div class="w-10 h-10 bg-surface border border-ink rounded flex items-center justify-center mb-4">
                         <x-lucide-clock class="w-5 h-5 text-ink" />
@@ -132,7 +133,7 @@
                     <p class="font-serif text-sm text-muted leading-relaxed">Sistem booking otomatis, batas peminjaman 7
                         hari, verifikasi petugas, dan notifikasi jatuh tempo.</p>
                 </div>
-                {{-- Card 3 --}}
+
                 <div class="bg-background border border-ink p-6 hover:border-coffee transition-colors">
                     <div class="w-10 h-10 bg-surface border border-ink rounded flex items-center justify-center mb-4">
                         <x-lucide-shield-check class="w-5 h-5 text-ink" />
@@ -145,7 +146,7 @@
         </div>
     </section>
 
-    {{-- 4. STATS BAR --}}
+    {{-- 4. stats --}}
     <section class="py-0 border-b border-ink bg-surface">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-0">
             <div class="p-6 text-center border-b md:border-b-0 md:border-r border-ink">
@@ -167,7 +168,7 @@
         </div>
     </section>
 
-    {{-- 5. HOW IT WORKS --}}
+    {{-- 5. cara kerja --}}
     <section id="how-it-works" class="py-20 px-4 border-b border-ink">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-12">
@@ -175,7 +176,7 @@
                 <p class="mt-2 font-serif text-muted">Proses sederhana untuk meminjam buku di Scriptoria.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {{-- Step 1 --}}
+                
                 <div class="text-center">
                     <div
                         class="w-16 h-16 mx-auto bg-surface border border-ink rounded-full flex items-center justify-center mb-4">
@@ -185,7 +186,7 @@
                     <p class="font-serif text-sm text-muted">Jelajahi katalog digital, filter kategori, dan pilih
                         koleksi yang ingin dipinjam.</p>
                 </div>
-                {{-- Step 2 --}}
+                
                 <div class="text-center">
                     <div
                         class="w-16 h-16 mx-auto bg-surface border border-ink rounded-full flex items-center justify-center mb-4">
@@ -195,7 +196,7 @@
                     <p class="font-serif text-sm text-muted">Sistem generate kode unik. Tunjukkan ke petugas dalam
                         waktu 24 jam.</p>
                 </div>
-                {{-- Step 3 --}}
+                
                 <div class="text-center">
                     <div
                         class="w-16 h-16 mx-auto bg-surface border border-ink rounded-full flex items-center justify-center mb-4">
@@ -210,21 +211,24 @@
     </section>
 
     {{-- 6. FINAL CTA --}}
-    <section class="py-20 px-4 border-b border-ink bg-surface text-center">
-        <h2 class="font-serif text-2xl md:text-3xl font-bold text-ink">Siap Mengakses Koleksi?</h2>
-        <p class="mt-2 font-serif text-muted max-w-lg mx-auto mb-8">Daftarkan diri Anda sebagai anggota dan mulai
-            pinjam buku secara digital maupun fisik.</p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{{ route('register') }}"
-                class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
-                <x-lucide-user-plus class="w-4 h-4" /> Buat Akun Gratis
-            </a>
-            <a href="{{ url('/rules') }}"
-                class="px-6 py-3 bg-background text-ink border border-ink font-serif hover:bg-ink/5 transition-colors rounded flex items-center justify-center gap-2">
-                <x-lucide-scale class="w-4 h-4" /> Baca Tata Tertib
-            </a>
-        </div>
-    </section>
+    @guest
+        <section class="py-20 px-4 border-b border-ink bg-surface text-center">
+            <h2 class="font-serif text-2xl md:text-3xl font-bold text-ink">Siap Mengakses Koleksi?</h2>
+            <p class="mt-2 font-serif text-muted max-w-lg mx-auto mb-8">Daftarkan diri Anda sebagai anggota dan mulai
+                pinjam buku secara digital maupun fisik.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ route('register') }}"
+                    class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
+                    <x-lucide-user-plus class="w-4 h-4" /> Buat Akun Gratis
+                </a>
+                <a href="{{ route('rules') }}"
+                    class="px-6 py-3 bg-background text-ink border border-ink font-serif hover:bg-ink/5 transition-colors rounded flex items-center justify-center gap-2">
+                    <x-lucide-scale class="w-4 h-4" /> Baca Tata Tertib
+                </a>
+            </div>
+        </section>
+    @endguest
+
 
     {{-- 7. FOOTER --}}
     <footer class="py-10 px-4 bg-background">
@@ -234,9 +238,9 @@
                 <span class="font-serif font-bold tracking-[0.1em] uppercase text-ink">Scriptoria</span>
             </div>
             <div class="flex items-center gap-4">
-                <a href="{{ url('/about') }}"
+                <a href="{{ route('about') }}"
                     class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tentang</a>
-                <a href="{{ url('/rules') }}"
+                <a href="{{ route('rules') }}"
                     class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tata
                     Tertib</a>
                 <a href="{{ route('login') }}"

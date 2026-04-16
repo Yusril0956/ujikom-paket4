@@ -119,7 +119,6 @@
                 <div class="bg-surface border border-ink">
                     <div class="px-6 py-4 border-b border-ink flex items-center justify-between">
                         <h3 class="font-serif font-semibold text-ink">Peminjaman Aktif</h3>
-                        <a href="#" class="text-xs font-mono uppercase tracking-widest text-coffee hover:text-ink transition-colors">Lihat Riwayat ›</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">

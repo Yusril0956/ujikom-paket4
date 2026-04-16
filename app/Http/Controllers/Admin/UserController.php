@@ -130,7 +130,6 @@ class UserController extends Controller
         // Set deleted_by before soft delete
         $user->update(['deleted_by' => auth()->id()]);
 
-        // Soft delete
         $user->delete();
 
         return redirect()->route('admin.users.index')

@@ -169,7 +169,7 @@
                     <div class="px-6 py-12 text-center">
                         <x-lucide-check-circle class="w-10 h-10 mx-auto text-muted mb-3 opacity-40" />
                         <p class="font-serif text-muted">Tidak ada peminjaman aktif.</p>
-                        <a href="{{ route('public.catalog') }}" class="text-coffee hover:text-ink mt-2 inline-block font-serif">
+                        <a href="{{ route('books.index') }}" class="text-coffee hover:text-ink mt-2 inline-block font-serif">
                             Jelajahi katalog →
                         </a>
                     </div>

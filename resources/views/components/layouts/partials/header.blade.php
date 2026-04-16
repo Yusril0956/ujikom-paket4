@@ -58,7 +58,7 @@
             <button class="flex items-center gap-2 focus:outline-none" title="Menu Profil">
                 <div class="w-10 h-10 rounded-full border border-ink overflow-hidden bg-background hover:border-coffee transition-colors">
                     @if(auth()->user()->avatar)
-                    <img src="{{ asset(auth()->user()->avatar) }}"
+                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}"
                         alt="{{ $userName }}"
                         class="w-full h-full object-cover">
                     @else

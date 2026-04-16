@@ -70,9 +70,6 @@
 
                 {{-- Transaction Management (Admin & Petugas) --}}
                 <x-layouts.partials.sidebar-item icon="receipt" label="Data Transaksi" :href="route('admin.transaksi.index')" :active="request()->routeIs('admin.transaksi.*')" />
-
-                {{-- Book Management (Admin & Petugas) --}}
-                <x-layouts.partials.sidebar-item icon="book-open" label="Data Buku" :href="route('admin.books.index')" :active="request()->routeIs('admin.books.*')" />
             @endif
 
             {{-- ═══════════════════════════════════════════════════════ --}}

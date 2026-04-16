@@ -59,7 +59,7 @@
                     <h2 class="text-lg font-serif font-semibold text-ink border-b border-ink pb-3 mb-4">Data Peminjam
                     </h2>
                     <div class="flex items-start gap-4">
-                        <img src="{{ $transaksi->user->avatar_url }}" alt="{{ $transaksi->user->name }}" 
+                        <img src="{{ asset('storage/' . $transaksi->user->avatar) }}" alt="{{ $transaksi->user->name }}" 
                             class="w-16 h-16 bg-background border border-ink rounded-full object-cover">
                         <div>
                             <h3 class="font-serif text-xl font-bold text-ink">{{ $transaksi->user->name }}</h3>

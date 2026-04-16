@@ -30,12 +30,12 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <a href="#"
+                    <a href="{{ route('login') }}"
                         class="inline-flex items-center gap-2 bg-ink text-[#fcfaf5] border-2 border-ink px-8 py-3 font-mono text-sm font-black uppercase tracking-widest shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_rgba(44,36,32,1)] transition-all">
                         <x-lucide-key-round class="w-5 h-5" />
                         Akses Masuk
                     </a>
-                    <a href="#"
+                    <a href="{{ route('register') }}"
                         class="inline-flex items-center gap-2 bg-[#fcfaf5] text-ink border-2 border-ink px-8 py-3 font-mono text-sm font-black uppercase tracking-widest shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_rgba(44,36,32,1)] transition-all">
                         <x-lucide-file-plus-corner class="w-5 h-5" />
                         Registrasi Baru

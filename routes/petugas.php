@@ -47,7 +47,7 @@ Route::middleware(['auth', 'role:admin,petugas'])
             Route::get('/create', [BookController::class, 'create'])->name('create');
             Route::post('/', [BookController::class, 'store'])->name('store');
             Route::get('/{book}/edit', [BookController::class, 'edit'])->name('edit');
-            Route::patch('/{book}', [BookController::class, 'update'])->name('update');
+            Route::put('/{book}', [BookController::class, 'update'])->name('update');
             Route::delete('/{book}', [BookController::class, 'destroy'])->name('destroy');
         });
 

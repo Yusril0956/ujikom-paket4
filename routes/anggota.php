@@ -23,6 +23,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/anggota/dashboard', function () {
         $user = auth()->user();
 
+        if (!$user->isAnggota()) {
+            abort(403, 'Hanya anggota yang dapat mengakses dashboard ini.');
+        }
+
         $borrowingStats = [
             'active' => $user->transaksis()
                 ->where('status', 'dipinjam')
@@ -53,13 +57,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/books/{book}/borrow', [AnggotaTransaksiController::class, 'borrow'])
         ->name('books.borrow');
 
+    Route::get('/transaksi/receipt/{bookingCode}', [AnggotaTransaksiController::class, 'receipt'])
+        ->name('anggota.transaksi.receipt');
+
     Route::get('/transaksi', [AnggotaTransaksiController::class, 'index'])
         ->name('anggota.transaksi');
 
     Route::patch('/transaksi/{transaksi}/return', [AnggotaTransaksiController::class, 'returnBook'])
         ->name('anggota.transaksi.return');
-
-
-    Route::get('/transaksi/receipt/{bookingCode}', [AnggotaTransaksiController::class, 'receipt'])
-        ->name('anggota.transaksi.receipt');
 });

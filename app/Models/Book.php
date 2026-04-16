@@ -46,17 +46,13 @@ class Book extends Model
     public function getCoverUrlAttribute(): string
     {
         if (!$this->cover_image) {
-            // ✅ Use local SVG placeholder instead of external API
-            // This can be cached indefinitely
             return asset('images/book-placeholder.svg');
         }
 
-        // Handle public/images_covers directory
         if (str_starts_with($this->cover_image, 'images_covers/')) {
             return asset($this->cover_image);
         }
 
-        // Handle storage link (books/covers/) - add cache buster if needed
         return asset('storage/' . $this->cover_image);
     }
 
@@ -103,5 +99,15 @@ class Book extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

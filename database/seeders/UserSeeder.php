@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Citra Dewi',
             'email' => 'petugas@perpustakaan.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('password'),
             'role' => 'petugas',
             'status' => 'aktif',
             'email_verified_at' => now(),
@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Alya Rahmawati',
             'email' => 'alya@email.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('password'),
             'role' => 'anggota',
             'status' => 'aktif',
             'email_verified_at' => now(),

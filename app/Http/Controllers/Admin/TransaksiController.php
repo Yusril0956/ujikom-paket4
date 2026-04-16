@@ -65,6 +65,12 @@ class TransaksiController extends Controller
         $validated = $request->validated();
 
         $transaksi = DB::transaction(function () use ($validated) {
+            $book = Book::lockForUpdate()->find($validated['book_id']);
+
+            if ($book->stock_available <= 0) {
+                throw new \Exception('Stok buku tidak tersedia.');
+            }
+
             $txn = Transaksi::create([
                 'user_id' => $validated['user_id'],
                 'book_id' => $validated['book_id'],
@@ -73,6 +79,12 @@ class TransaksiController extends Controller
                 'notes' => $validated['notes'] ?? null,
                 'status' => 'dipinjam',
             ]);
+
+            $book->decrement('stock_available');
+
+            if ($book->stock_available - 1 <= 0) {
+                $book->update(['availability_status' => 'dipinjam']);
+            }
 
             return $txn;
         });

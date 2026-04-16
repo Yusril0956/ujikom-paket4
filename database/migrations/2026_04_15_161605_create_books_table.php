@@ -30,6 +30,11 @@ return new class extends Migration
             $table->integer('stock_total')->default(1);
             $table->integer('stock_available')->default(1);
             $table->boolean('is_public')->default(true);
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+
             $table->softDeletes();
             $table->timestamps();
 

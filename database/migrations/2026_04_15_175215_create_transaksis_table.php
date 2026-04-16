@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->constrained()->onDelete('restrict');
-            $table->foreignId('book_id')->constrained()->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
 
             $table->string('booking_code')->nullable()->unique()->comment('Kode verifikasi untuk bukti peminjaman');
             $table->timestamp('pickup_deadline')->nullable()->comment('Batas waktu pengambilan (24 jam dari request)');

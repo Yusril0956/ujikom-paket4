@@ -53,7 +53,6 @@ class Transaksi extends Model
         });
     }
 
-    // ── Accessors ─────────────────────────────────────
     public function getFormattedIdAttribute(): string
     {
         return 'TXN-' . str_pad($this->id, 4, '0', STR_PAD_LEFT);
@@ -121,6 +120,10 @@ class Transaksi extends Model
 
     public function approve(User $admin): bool
     {
+        if (!$admin->isAdmin() && !$admin->isPetugas()) {
+            return false;
+        }
+
         return DB::transaction(function () use ($admin) {
             // Lock user & book untuk atomic operation
             $user = User::lockForUpdate()->find($this->user_id);
@@ -165,7 +168,6 @@ class Transaksi extends Model
     {
         if ($this->status !== 'dipinjam' && $this->status !== 'terlambat') return false;
 
-        // Calculate fine if overdue
         if ($this->is_overdue) {
             $daysLate = $this->due_date->diffInDays(now());
             $this->fine_amount = $daysLate * 1000; // Rp 1.000/hari (sesuaikan kebijakan)
@@ -176,7 +178,6 @@ class Transaksi extends Model
             'returned_date' => now()->toDateString(),
         ]);
 
-        // Restore book stock
         $this->book->increment('stock_available');
 
         return true;

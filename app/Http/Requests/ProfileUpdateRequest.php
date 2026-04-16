@@ -30,8 +30,7 @@ class ProfileUpdateRequest extends FormRequest
                 'nullable',
                 'image',
                 'mimes:jpeg,png,jpg,webp',
-                'max:2048', // 2MB max
-                'dimensions:min_width=100,min_height=100,max_width=1000,max_height=1000'
+                'max:2048',
             ],
             'current_password' => ['nullable', 'required_with:password', 'current_password'],
             'password' => ['nullable', 'confirmed', 'min:8', 'different:current_password'],

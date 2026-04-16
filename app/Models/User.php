@@ -144,91 +144,48 @@ class User extends Authenticatable
         return asset('avatars/default-avatar.svg');
     }
 
-    // ── Relationships ───────────────────────────────
-    /**
-     * Get user's transactions
-     */
     public function transaksis()
     {
         return $this->hasMany(Transaksi::class);
     }
 
-    /**
-     * Get the user who created this record
-     */
     public function createdByUser()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the user who last updated this record
-     */
     public function updatedByUser()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    /**
-     * Get the user who deleted this record (soft delete)
-     */
     public function deletedByUser()
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
-    /**
-     * Check if user is admin
-     */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
-    /**
-     * Check if user is staff
-     */
     public function isPetugas(): bool
     {
         return $this->role === 'petugas';
     }
 
-    /**
-     * Check if user is member
-     */
     public function isAnggota(): bool
     {
         return $this->role === 'anggota';
     }
 
-    /**
-     * Check if user is active
-     */
     public function isActive(): bool
     {
         return $this->status === 'aktif';
     }
 
-    /**
-     * Check if email is verified
-     */
     public function isEmailVerified(): bool
     {
         return !is_null($this->email_verified_at);
-    }
-
-    public function createdBy()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function updatedBy()
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
-
-    public function deletedBy()
-    {
-        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

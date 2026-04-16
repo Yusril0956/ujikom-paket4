@@ -11,7 +11,8 @@ class TransaksiStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $user = auth()->user();
+        return $user && in_array($user->role, ['admin', 'petugas']);
     }
 
     public function rules(): array

@@ -195,47 +195,7 @@
         </div>
 
         {{-- Pagination --}}
-        @if ($users->hasPages())
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
-            <span class="text-xs font-mono text-muted">
-                Halaman {{ $users->currentPage() }} dari {{ $users->lastPage() }}
-            </span>
-            <nav class="flex items-center gap-2">
-                {{-- Previous --}}
-                @if ($users->onFirstPage())
-                <span
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">←
-                    Prev</span>
-                @else
-                <a href="{{ $users->previousPageUrl() }}"
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">←
-                    Prev</a>
-                @endif
-
-                {{-- Page Numbers --}}
-                @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
-                @if ($page == $users->currentPage())
-                <span
-                    class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">{{ $page }}</span>
-                @elseif ($page >= $users->currentPage() - 2 && $page <= $users->currentPage() + 2)
-                    <a href="{{ $url }}"
-                        class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">{{ $page }}</a>
-                    @endif
-                    @endforeach
-
-                    {{-- Next --}}
-                    @if ($users->hasMorePages())
-                    <a href="{{ $users->nextPageUrl() }}"
-                        class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
-                        →</a>
-                    @else
-                    <span
-                        class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">Next
-                        →</span>
-                    @endif
-            </nav>
-        </div>
-        @endif
+        <x-pagination :paginator="$users" />
 
         {{-- 5. CATATAN SISTEM --}}
         <div class="bg-blue-50 border border-blue-300 p-5 rounded-md">

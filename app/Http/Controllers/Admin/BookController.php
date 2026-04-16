@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Exception;
 
 class BookController extends Controller
 {
@@ -37,7 +38,7 @@ class BookController extends Controller
         // Only show public books by default
         $query->publik();
 
-        $books = $query->orderBy('created_at', 'desc')->paginate(12)->withQueryString();
+        $books = $query->orderBy('created_at', 'desc')->paginate(6)->withQueryString();
 
         return view('pages.books.index', compact('books'));
     }
@@ -57,16 +58,13 @@ class BookController extends Controller
     {
         $validated = $request->validated();
 
-        // Handle cover image upload
         if ($request->hasFile('cover_image')) {
             $validated['cover_image'] = $request->file('cover_image')
                 ->store('books/covers', 'public');
         }
 
-        // Auto-calculate stock
         $validated['stock_available'] = $validated['stock_total'] ?? 1;
 
-        // Create book
         Book::create($validated);
 
         return redirect()->route('books.index')
@@ -96,17 +94,17 @@ class BookController extends Controller
     {
         $validated = $request->validated();
 
-        // Handle cover image upload
         if ($request->hasFile('cover_image')) {
-            // Delete old cover if exists
-            if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
-                Storage::disk('public')->delete($book->cover_image);
+            try {
+                $validated['cover_image'] = $request->file('cover_image')
+                    ->store('books/covers', 'public');
+            } catch (Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Gagal upload gambar: ' . $e->getMessage());
             }
-            $validated['cover_image'] = $request->file('cover_image')
-                ->store('books/covers', 'public');
         }
 
-        // Update stock logic
         if (isset($validated['stock_total'])) {
             $oldTotal = $book->stock_total;
             $newTotal = $validated['stock_total'];
@@ -125,13 +123,12 @@ class BookController extends Controller
      */
     public function destroy(Book $book): RedirectResponse
     {
-        // Delete cover image if exists
         if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
             Storage::disk('public')->delete($book->cover_image);
         }
 
         $book->delete();
-        
+
 
         return redirect()->route('books.index')
             ->with('success', 'Buku berhasil dihapus dari katalog.');

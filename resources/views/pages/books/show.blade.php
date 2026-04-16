@@ -28,13 +28,13 @@
                             <x-lucide-trash-2 class="w-4 h-4" /> Hapus
                         </button>
                     </form>
-                @elseif(auth()->check() && auth()->user()->isStaff())
+                @elseif(auth()->check() && auth()->user()->isPetugas())
                     {{-- Petugas: Hanya Edit --}}
                     <a href="{{ route('admin.books.edit', $book) }}"
                         class="px-4 py-2 border border-amber-600 bg-amber-50 text-sm font-serif text-amber-700 hover:bg-amber-100 transition-all rounded-md flex items-center gap-2">
                         <x-lucide-pencil class="w-4 h-4" /> Edit
                     </a>
-                @elseif(auth()->check() && auth()->user()->isMember())
+                @elseif(auth()->check() && auth()->user()->isAnggota())
                     {{-- Member: Pinjam Button --}}
                     <button onclick="openBorrowModal()"
                         class="px-4 py-2.5 bg-blue-600 text-surface border border-blue-600 text-sm font-serif hover:bg-blue-700 transition-all rounded-md flex items-center gap-2">
@@ -193,7 +193,7 @@
     </div>
 
     {{-- BORROW REQUEST MODAL (for members) --}}
-    @if(auth()->check() && auth()->user()->isMember())
+    @if(auth()->check() && auth()->user()->isAnggota())
         <div id="borrowModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div class="bg-surface border border-ink rounded-lg max-w-md w-full shadow-lg">
                 {{-- Header --}}

@@ -1,277 +1,252 @@
-<x-layouts.app>
-    <div class="min-h-screen bg-[#fcfaf5] text-ink relative overflow-hidden selection:bg-ink selection:text-[#fcfaf5]">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 
-        <div
-            class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] z-0">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scriptoria | Digital Archive</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        section {
+            scroll-margin-top: 5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-ink antialiased">
+
+    {{-- 1. NAVBAR --}}
+    <nav class="fixed top-0 w-full bg-surface/95 backdrop-blur-sm border-b border-ink z-50" aria-label="Navigasi Utama">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                {{-- Logo --}}
+                <a href="/" class="flex items-center gap-2 group">
+                    <x-lucide-book-open
+                        class="w-6 h-6 text-ink stroke-[1.5] group-hover:text-coffee transition-colors" />
+                    <span class="font-serif text-lg font-bold tracking-[0.1em] uppercase text-ink">Scriptoria</span>
+                </a>
+
+                {{-- Desktop Links --}}
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#features"
+                        class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Fitur</a>
+                    <a href="#how-it-works"
+                        class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Cara
+                        Kerja</a>
+                    <a href="{{ url('/about') }}"
+                        class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tentang</a>
+                </div>
+
+                {{-- Auth Buttons --}}
+                <div class="flex items-center gap-3">
+                    @auth
+                        @php
+                            $role = auth()->user()->role ?? 'anggota';
+                            $dashboardRoute = match ($role) {
+                                'admin', 'petugas' => route('admin.dashboard'),
+                                default => route('member.dashboard'),
+                            };
+                        @endphp
+                        <a href="{{ $dashboardRoute }}"
+                            class="hidden sm:inline-flex px-4 py-2 border border-ink text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5 transition-colors rounded">
+                            Dashboard
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit"
+                                class="px-4 py-2 bg-ink text-surface border border-ink text-[10px] font-mono uppercase tracking-[0.15em] hover:bg-ink/90 transition-colors rounded">
+                                Logout
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="hidden sm:inline-flex px-4 py-2 border border-ink text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5 transition-colors rounded">
+                            Masuk
+                        </a>
+                        <a href="{{ route('register') }}"
+                            class="px-4 py-2 bg-ink text-surface border border-ink text-[10px] font-mono uppercase tracking-[0.15em] hover:bg-ink/90 transition-colors rounded">
+                            Daftar Akun
+                        </a>
+                    @endauth
+                </div>
+            </div>
         </div>
+    </nav>
 
-        <div class="max-w-7xl mx-auto px-6 py-16 relative z-10">
-
-            <section class="text-center mb-24 border-b-4 border-double border-ink pb-16">
-                <div class="mb-8">
-                    <div
-                        class="inline-flex items-center gap-2 border-2 border-ink bg-ink/5 px-4 py-1 text-ink text-xs font-mono font-black uppercase tracking-widest mb-6 shadow-[4px_4px_0px_rgba(44,36,32,1)]">
-                        <x-lucide-archive class="w-4 h-4" />
-                        [ Dokumen Publik - Terbuka Untuk Umum ]
-                    </div>
-                </div>
-
-                <h1
-                    class="text-6xl md:text-8xl font-black text-ink mb-6 font-serif uppercase tracking-tight leading-none">
-                    Arsip Cerita <br>
-                    <span class="border-b-4 border-ink">Pengetahuan Abadi</span>
-                </h1>
-
-                <div
-                    class="flex justify-center items-center gap-4 mb-12 font-mono text-sm uppercase tracking-widest text-ink/70">
-                    <div class="h-px w-16 bg-ink/50"></div>
-                    <p>Menjelajahi masa lalu melalui tinta digital</p>
-                    <div class="h-px w-16 bg-ink/50"></div>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <a href="{{ route('login') }}"
-                        class="inline-flex items-center gap-2 bg-ink text-[#fcfaf5] border-2 border-ink px-8 py-3 font-mono text-sm font-black uppercase tracking-widest shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_rgba(44,36,32,1)] transition-all">
-                        <x-lucide-key-round class="w-5 h-5" />
-                        Akses Masuk
-                    </a>
-                    <a href="{{ route('register') }}"
-                        class="inline-flex items-center gap-2 bg-[#fcfaf5] text-ink border-2 border-ink px-8 py-3 font-mono text-sm font-black uppercase tracking-widest shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_rgba(44,36,32,1)] transition-all">
-                        <x-lucide-file-plus-corner class="w-5 h-5" />
-                        Registrasi Baru
-                    </a>
-                </div>
-
-            </section>
-
-            <section class="grid md:grid-cols-3 gap-8 mb-24">
-                <div class="bg-[#fcfaf5] p-8 border-2 border-ink shadow-[8px_8px_0px_rgba(44,36,32,1)] relative">
-                    <div class="absolute top-0 right-0 bg-ink text-[#fcfaf5] font-mono text-[10px] px-2 py-1 uppercase">
-                        Bab 01</div>
-                    <div
-                        class="w-12 h-12 border-2 border-ink flex items-center justify-center mb-6 transform -rotate-3 bg-ink/5">
-                        <x-lucide-book-open class="w-6 h-6 text-ink" />
-                    </div>
-                    <h3 class="text-xl font-black font-serif text-ink mb-3 uppercase">Koleksi Lengkap</h3>
-                    <p class="text-ink/80 font-mono text-xs leading-relaxed text-justify">
-                        Ribuan literatur dari berbagai kategori siap menemani perjalanan intelektual Anda. Dari naskah
-                        klasik hingga jurnal terkini.
-                    </p>
-                </div>
-
-                <div class="bg-[#fcfaf5] p-8 border-2 border-ink shadow-[8px_8px_0px_rgba(44,36,32,1)] relative">
-                    <div class="absolute top-0 right-0 bg-ink text-[#fcfaf5] font-mono text-[10px] px-2 py-1 uppercase">
-                        Bab 02</div>
-                    <div
-                        class="w-12 h-12 border-2 border-ink flex items-center justify-center mb-6 transform rotate-3 bg-ink/5">
-                        <x-lucide-zap class="w-6 h-6 text-ink" />
-                    </div>
-                    <h3 class="text-xl font-black font-serif text-ink mb-3 uppercase">Pencarian Kilat</h3>
-                    <p class="text-ink/80 font-mono text-xs leading-relaxed text-justify">
-                        Sistem indeksasi canggih memungkinkan Anda melacak letak rak dokumen dalam hitungan detik. Tanpa
-                        perlu membuka laci manual.
-                    </p>
-                </div>
-
-                <div class="bg-[#fcfaf5] p-8 border-2 border-ink shadow-[8px_8px_0px_rgba(44,36,32,1)] relative">
-                    <div class="absolute top-0 right-0 bg-ink text-[#fcfaf5] font-mono text-[10px] px-2 py-1 uppercase">
-                        Bab 03</div>
-                    <div
-                        class="w-12 h-12 border-2 border-ink flex items-center justify-center mb-6 transform -rotate-2 bg-ink/5">
-                        <x-lucide-shield-check class="w-6 h-6 text-ink" />
-                    </div>
-                    <h3 class="text-xl font-black font-serif text-ink mb-3 uppercase">Kerahasiaan Terjaga</h3>
-                    <p class="text-ink/80 font-mono text-xs leading-relaxed text-justify">
-                        Log sirkulasi dan data pribadi terenkripsi dengan protokol keamanan berlapis. Privasi pembaca
-                        adalah sumpah kami.
-                    </p>
-                </div>
-            </section>
-
-            <section class="border-4 border-double border-ink p-1 relative mb-24">
-                <div class="bg-ink text-[#fcfaf5] p-12 text-center">
-                    <h2 class="text-3xl font-black font-serif uppercase mb-4">Statistik Inventaris</h2>
-                    <p class="font-mono text-sm text-[#fcfaf5]/70 mb-12">Laporan sirkulasi harian - Diperbarui secara
-                        otomatis</p>
-
-                    <div class="grid md:grid-cols-4 gap-8">
-                        <div class="border border-dashed border-[#fcfaf5]/30 p-6 relative">
-                            <div class="text-4xl font-black font-serif mb-2">2,500+</div>
-                            <div class="font-mono text-xs uppercase tracking-widest text-[#fcfaf5]/70">Naskah</div>
-                        </div>
-                        <div class="border border-dashed border-[#fcfaf5]/30 p-6">
-                            <div class="text-4xl font-black font-serif mb-2">1,200+</div>
-                            <div class="font-mono text-xs uppercase tracking-widest text-[#fcfaf5]/70">Anggota</div>
-                        </div>
-                        <div class="border border-dashed border-[#fcfaf5]/30 p-6">
-                            <div class="text-4xl font-black font-serif mb-2">15,000+</div>
-                            <div class="font-mono text-xs uppercase tracking-widest text-[#fcfaf5]/70">Sirkulasi</div>
-                        </div>
-                        <div class="border border-dashed border-[#fcfaf5]/30 p-6">
-                            <div class="text-4xl font-black font-serif mb-2">98%</div>
-                            <div class="font-mono text-xs uppercase tracking-widest text-[#fcfaf5]/70">Presisi</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="mb-24">
-                <div class="flex items-end justify-between border-b-2 border-ink pb-4 mb-8">
-                    <div>
-                        <h2 class="text-3xl font-black font-serif text-ink uppercase">Koleksi Terkini</h2>
-                        <p class="font-mono text-sm text-ink/70 mt-2">Arsip yang baru saja masuk ke brankas kami.</p>
-                    </div>
-                    <a href="#"
-                        class="font-mono text-xs font-black uppercase text-ink hover:underline decoration-2 underline-offset-4 hidden md:block">
-                        Lihat Seluruh Indeks &rarr;
-                    </a>
-                </div>
-
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div
-                        class="group bg-[#fcfaf5] border-2 border-ink p-3 shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(44,36,32,1)] transition-all flex flex-col">
-                        <div class="aspect-[3/4] border-2 border-ink mb-4 relative overflow-hidden bg-ink/5 p-1">
-                            <img src="https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=400&fit=crop"
-                                alt="Sample Book Cover"
-                                class="w-full h-full object-cover filter sepia-[30%] grayscale-[20%] group-hover:filter-none transition-all duration-500"
-                                loading="lazy">
-                            <div
-                                class="absolute top-2 right-2 bg-[#fcfaf5] border border-ink px-2 py-0.5 font-mono text-[9px] font-black uppercase shadow-sm">
-                                FICTION
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-col">
-                            <h3 class="font-black font-serif text-lg text-ink line-clamp-2 leading-tight mb-1 uppercase"
-                                title="The Great Gatsby">
-                                The Great Gatsby
-                            </h3>
-                            <p class="text-ink/70 font-mono text-[10px] uppercase mb-4">
-                                PENA: F. Scott Fitzgerald
-                            </p>
-                            <div
-                                class="mt-auto pt-3 border-t border-dashed border-ink/30 flex items-center justify-between font-mono text-[10px] font-black uppercase">
-                                <span>STOK: 5/10</span>
-                                <span class="text-ink border border-ink px-1.5 py-0.5 bg-green-500/20">TERSEDIA</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="group bg-[#fcfaf5] border-2 border-ink p-3 shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(44,36,32,1)] transition-all flex flex-col">
-                        <div class="aspect-[3/4] border-2 border-ink mb-4 relative overflow-hidden bg-ink/5 p-1">
-                            <img src="https://images.unsplash.com/photo-1512820790803-83ca3b5e?ixlib=rb-4.0.3&w=400&fit=crop"
-                                alt="Sample Book Cover"
-                                class="w-full h-full object-cover filter sepia-[30%] grayscale-[20%] group-hover:filter-none transition-all duration-500"
-                                loading="lazy">
-                            <div
-                                class="absolute top-2 right-2 bg-[#fcfaf5] border border-ink px-2 py-0.5 font-mono text-[9px] font-black uppercase shadow-sm">
-                                PHILOSOPHY
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-col">
-                            <h3 class="font-black font-serif text-lg text-ink line-clamp-2 leading-tight mb-1 uppercase"
-                                title="1984">
-                                1984
-                            </h3>
-                            <p class="text-ink/70 font-mono text-[10px] uppercase mb-4">
-                                PENA: George Orwell
-                            </p>
-                            <div
-                                class="mt-auto pt-3 border-t border-dashed border-ink/30 flex items-center justify-between font-mono text-[10px] font-black uppercase">
-                                <span>STOK: 0/8</span>
-                                <span class="text-ink border border-ink px-1.5 py-0.5 bg-red-500/20">DIPINJAM</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="group bg-[#fcfaf5] border-2 border-ink p-3 shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(44,36,32,1)] transition-all flex flex-col">
-                        <div class="aspect-[3/4] border-2 border-ink mb-4 relative overflow-hidden bg-ink/5 p-1">
-                            <img src="https://images.unsplash.com/photo-1469362102473-8622cfb973cd?w=400&fit=crop"
-                                alt="Sample Book Cover"
-                                class="w-full h-full object-cover filter sepia-[30%] grayscale[20%] group-hover:filter-none transition-all duration-500"
-                                loading="lazy">
-                            <div
-                                class="absolute top-2 right-2 bg-[#fcfaf5] border border-ink px-2 py-0.5 font-mono text-[9px] font-black uppercase shadow-sm">
-                                SCIENCE
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-col">
-                            <h3 class="font-black font-serif text-lg text-ink line-clamp-2 leading-tight mb-1 uppercase"
-                                title="Sapiens">
-                                Sapiens
-                            </h3>
-                            <p class="text-ink/70 font-mono text-[10px] uppercase mb-4">
-                                PENA: Yuval Noah Harari
-                            </p>
-                            <div
-                                class="mt-auto pt-3 border-t border-dashed border-ink/30 flex items-center justify-between font-mono text-[10px] font-black uppercase">
-                                <span>STOK: 3/5</span>
-                                <span class="text-ink border border-ink px-1.5 py-0.5 bg-green-500/20">TERSEDIA</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="group bg-[#fcfaf5] border-2 border-ink p-3 shadow-[6px_6px_0px_rgba(44,36,32,1)] hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(44,36,32,1)] transition-all flex flex-col">
-                        <div class="aspect-[3/4] border-2 border-ink mb-4 relative overflow-hidden bg-ink/5 p-1">
-                            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&fit=crop"
-                                alt="Sample Book Cover"
-                                class="w-full h-full object-cover filter sepia-[30%] grayscale-[20%] group-hover:filter-none transition-all duration-500"
-                                loading="lazy">
-                            <div
-                                class="absolute top-2 right-2 bg-[#fcfaf5] border border-ink px-2 py-0.5 font-mono text-[9px] font-black uppercase shadow-sm">
-                                POETRY
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-col">
-                            <h3 class="font-black font-serif text-lg text-ink line-clamp-2 leading-tight mb-1 uppercase"
-                                title="The Alchemist">
-                                The Alchemist
-                            </h3>
-                            <p class="text-ink/70 font-mono text-[10px] uppercase mb-4">
-                                PENA: Paulo Coelho
-                            </p>
-                            <div
-                                class="mt-auto pt-3 border-t border-dashed border-ink/30 flex items-center justify-between font-mono text-[10px] font-black uppercase">
-                                <span>STOK: 8/12</span>
-                                <span class="text-ink border border-ink px-1.5 py-0.5 bg-green-500/20">TERSEDIA</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="bg-[#fcfaf5] border-4 border-ink p-1 shadow-[12px_12px_0px_rgba(44,36,32,1)] relative">
-                <div class="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-ink"></div>
-                <div class="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-ink"></div>
-                <div class="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-ink"></div>
-                <div class="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-ink"></div>
-
-                <div class="border border-ink p-10 text-center relative z-10">
-                    <h3
-                        class="text-3xl font-black font-serif text-ink mb-6 uppercase tracking-widest border-b-2 border-dashed border-ink/30 inline-block pb-2">
-                        Manifesto Scriptoria</h3>
-                    <p class="font-mono text-sm text-ink/80 leading-loose max-w-3xl mx-auto mb-10 text-justify">
-                        Sistem ini bukan sekadar pangkalan data. Ini adalah upaya kami merawat ingatan kolektif. Setiap
-                        naskah yang Anda akses di sini adalah bagian dari sejarah yang kami digitalkan agar tetap
-                        beresonansi di meja-meja belajar generasi mendatang, menentang kelapukan waktu dan pelapukan
-                        kertas.
-                    </p>
-
-                    <div class="grid md:grid-cols-2 gap-0 border-2 border-ink text-left">
-                        <div class="p-6 border-b-2 md:border-b-0 md:border-r-2 border-ink bg-ink/5">
-                            <h4 class="font-black font-serif text-ink mb-2 uppercase text-lg">I. Visi Utama</h4>
-                            <p class="font-mono text-xs text-ink/70 leading-relaxed text-justify">Menjadi jembatan
-                                perantara antara mahakarya pengetahuan masa lalu dengan pemikiran inovatif masa depan
-                                melalui implementasi teknologi pengarsipan digital.</p>
-                        </div>
-                        <div class="p-6 bg-[#fcfaf5]">
-                            <h4 class="font-black font-serif text-ink mb-2 uppercase text-lg">II. Misi Operasional</h4>
-                            <p class="font-mono text-xs text-ink/70 leading-relaxed text-justify">Menyediakan akses
-                                sirkulasi dokumen yang terstruktur, presisi, dan merata terhadap seluruh khazanah
-                                literatur untuk semua lapisan intelektual masyarakat.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+    {{-- 2. HERO SECTION --}}
+    <header class="relative pt-32 pb-20 px-4 border-b border-ink">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface border border-ink rounded mb-6">
+                <x-lucide-sparkles class="w-3 h-3 text-coffee" />
+                <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Arsip Digital
+                    Terintegrasi</span>
+            </div>
+            <h1 class="font-serif text-4xl md:text-6xl font-bold text-ink tracking-tight leading-[1.1]">
+                Jelajahi Pengetahuan,<br class="hidden md:block"> Lestarikan Warisan.
+            </h1>
+            <p class="mt-6 font-serif text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+                Scriptoria adalah sistem manajemen perpustakaan modern yang dirancang untuk melestarikan,
+                mengatalogisasi, dan memudahkan akses terhadap koleksi buku fisik maupun digital.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ route('register') }}"
+                    class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
+                    <x-lucide-user-plus class="w-4 h-4" /> Mulai Bergabung
+                </a>
+                <a href="#features"
+                    class="px-6 py-3 bg-surface text-ink border border-ink font-serif hover:bg-ink/5 transition-colors rounded flex items-center justify-center gap-2">
+                    <x-lucide-arrow-down class="w-4 h-4" /> Pelajari Lebih Lanjut
+                </a>
+                <a href="{{ url('/katalog') }}"
+                    class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
+                    <x-lucide-book class="w-4 h-4" /> Lihat Koleksi
+                </a>
+            </div>
         </div>
-    </div>
-</x-layouts.app>
+    </header>
+
+    {{-- 3. FEATURES SECTION --}}
+    <section id="features" class="py-20 px-4 border-b border-ink bg-surface">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="font-serif text-2xl md:text-3xl font-bold text-ink">Mengapa Scriptoria?</h2>
+                <p class="mt-2 font-serif text-muted max-w-xl mx-auto">Sistem yang dirancang khusus untuk kebutuhan
+                    arsip, katalogisasi, dan peminjaman yang terstruktur.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {{-- Card 1 --}}
+                <div class="bg-background border border-ink p-6 hover:border-coffee transition-colors">
+                    <div class="w-10 h-10 bg-surface border border-ink rounded flex items-center justify-center mb-4">
+                        <x-lucide-book-open class="w-5 h-5 text-ink" />
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-ink mb-2">Katalog Terstruktur</h3>
+                    <p class="font-serif text-sm text-muted leading-relaxed">Pencarian cepat berdasarkan judul, penulis,
+                        ISBN, atau klasifikasi DDC/LCC dengan metadata yang lengkap.</p>
+                </div>
+                {{-- Card 2 --}}
+                <div class="bg-background border border-ink p-6 hover:border-coffee transition-colors">
+                    <div class="w-10 h-10 bg-surface border border-ink rounded flex items-center justify-center mb-4">
+                        <x-lucide-clock class="w-5 h-5 text-ink" />
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-ink mb-2">Peminjaman Terkendali</h3>
+                    <p class="font-serif text-sm text-muted leading-relaxed">Sistem booking otomatis, batas peminjaman 7
+                        hari, verifikasi petugas, dan notifikasi jatuh tempo.</p>
+                </div>
+                {{-- Card 3 --}}
+                <div class="bg-background border border-ink p-6 hover:border-coffee transition-colors">
+                    <div class="w-10 h-10 bg-surface border border-ink rounded flex items-center justify-center mb-4">
+                        <x-lucide-shield-check class="w-5 h-5 text-ink" />
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-ink mb-2">Arsip & Keamanan</h3>
+                    <p class="font-serif text-sm text-muted leading-relaxed">Pelacakan riwayat transaksi, manajemen
+                        denda otomatis, dan backup data koleksi secara berkala.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- 4. STATS BAR --}}
+    <section class="py-0 border-b border-ink bg-surface">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-0">
+            <div class="p-6 text-center border-b md:border-b-0 md:border-r border-ink">
+                <p class="font-mono text-3xl font-bold text-ink">12K+</p>
+                <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mt-1">Koleksi Buku</p>
+            </div>
+            <div class="p-6 text-center border-b md:border-b-0 md:border-r border-ink">
+                <p class="font-mono text-3xl font-bold text-ink">800+</p>
+                <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mt-1">Anggota Aktif</p>
+            </div>
+            <div class="p-6 text-center border-b md:border-b-0 md:border-r border-ink">
+                <p class="font-mono text-3xl font-bold text-ink">7 Hari</p>
+                <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mt-1">Masa Pinjam</p>
+            </div>
+            <div class="p-6 text-center">
+                <p class="font-mono text-3xl font-bold text-ink">24/7</p>
+                <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mt-1">Akses Katalog</p>
+            </div>
+        </div>
+    </section>
+
+    {{-- 5. HOW IT WORKS --}}
+    <section id="how-it-works" class="py-20 px-4 border-b border-ink">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="font-serif text-2xl md:text-3xl font-bold text-ink">Alur Peminjaman</h2>
+                <p class="mt-2 font-serif text-muted">Proses sederhana untuk meminjam buku di Scriptoria.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {{-- Step 1 --}}
+                <div class="text-center">
+                    <div
+                        class="w-16 h-16 mx-auto bg-surface border border-ink rounded-full flex items-center justify-center mb-4">
+                        <span class="font-mono text-xl font-bold text-ink">1</span>
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-ink mb-2">Cari & Pilih Buku</h3>
+                    <p class="font-serif text-sm text-muted">Jelajahi katalog digital, filter kategori, dan pilih
+                        koleksi yang ingin dipinjam.</p>
+                </div>
+                {{-- Step 2 --}}
+                <div class="text-center">
+                    <div
+                        class="w-16 h-16 mx-auto bg-surface border border-ink rounded-full flex items-center justify-center mb-4">
+                        <span class="font-mono text-xl font-bold text-ink">2</span>
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-ink mb-2">Dapatkan Kode Booking</h3>
+                    <p class="font-serif text-sm text-muted">Sistem generate kode unik. Tunjukkan ke petugas dalam
+                        waktu 24 jam.</p>
+                </div>
+                {{-- Step 3 --}}
+                <div class="text-center">
+                    <div
+                        class="w-16 h-16 mx-auto bg-surface border border-ink rounded-full flex items-center justify-center mb-4">
+                        <span class="font-mono text-xl font-bold text-ink">3</span>
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-ink mb-2">Ambil & Kembalikan</h3>
+                    <p class="font-serif text-sm text-muted">Verifikasi fisik oleh petugas. Kembalikan tepat waktu
+                        untuk hindari denda.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- 6. FINAL CTA --}}
+    <section class="py-20 px-4 border-b border-ink bg-surface text-center">
+        <h2 class="font-serif text-2xl md:text-3xl font-bold text-ink">Siap Mengakses Koleksi?</h2>
+        <p class="mt-2 font-serif text-muted max-w-lg mx-auto mb-8">Daftarkan diri Anda sebagai anggota dan mulai
+            pinjam buku secara digital maupun fisik.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ route('register') }}"
+                class="px-6 py-3 bg-ink text-surface border border-ink font-serif hover:bg-ink/90 transition-colors rounded flex items-center justify-center gap-2">
+                <x-lucide-user-plus class="w-4 h-4" /> Buat Akun Gratis
+            </a>
+            <a href="{{ url('/rules') }}"
+                class="px-6 py-3 bg-background text-ink border border-ink font-serif hover:bg-ink/5 transition-colors rounded flex items-center justify-center gap-2">
+                <x-lucide-scale class="w-4 h-4" /> Baca Tata Tertib
+            </a>
+        </div>
+    </section>
+
+    {{-- 7. FOOTER --}}
+    <footer class="py-10 px-4 bg-background">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <x-lucide-book-open class="w-5 h-5 text-ink stroke-[1.5]" />
+                <span class="font-serif font-bold tracking-[0.1em] uppercase text-ink">Scriptoria</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="{{ url('/about') }}"
+                    class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tentang</a>
+                <a href="{{ url('/rules') }}"
+                    class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tata
+                    Tertib</a>
+                <a href="{{ route('login') }}"
+                    class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Masuk</a>
+            </div>
+            <p class="font-mono text-[10px] text-muted">&copy; {{ date('Y') }} Scriptoria Digital Archive. All
+                rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

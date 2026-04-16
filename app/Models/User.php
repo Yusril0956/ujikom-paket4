@@ -134,15 +134,13 @@ class User extends Authenticatable
         };
     }
 
-    /**
-     * Get avatar URL with fallback
-     */
     public function getAvatarUrlAttribute(): string
     {
-        if ($this->avatar) {
+        if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {
             return asset('storage/' . $this->avatar);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=8B7355&color=fff';
+
+        return asset('avatars/default-avatar.svg');
     }
 
     // ── Relationships ───────────────────────────────
@@ -165,7 +163,7 @@ class User extends Authenticatable
     /**
      * Check if user is staff
      */
-    public function isStaff(): bool
+    public function isPetugas(): bool
     {
         return $this->role === 'petugas';
     }
@@ -173,7 +171,7 @@ class User extends Authenticatable
     /**
      * Check if user is member
      */
-    public function isMember(): bool
+    public function isAnggota(): bool
     {
         return $this->role === 'anggota';
     }
@@ -192,5 +190,20 @@ class User extends Authenticatable
     public function isEmailVerified(): bool
     {
         return !is_null($this->email_verified_at);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

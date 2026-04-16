@@ -1,0 +1,45 @@
+@props(['paginator'])
+
+@if ($paginator->hasPages())
+    <nav class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4"
+        aria-label="Pagination">
+        <span class="text-xs font-mono text-muted">
+            Menampilkan {{ $paginator->firstItem() ?? 0 }} - {{ $paginator->lastItem() ?? 0 }} dari
+            {{ $paginator->total() }} data
+        </span>
+        <div class="flex items-center gap-2">
+            {{-- Previous --}}
+            @if ($paginator->onFirstPage())
+                <span
+                    class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed"
+                    aria-disabled="true">← Prev</span>
+            @else
+                <a href="{{ $paginator->previousPageUrl() }}"
+                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">←
+                    Prev</a>
+            @endif
+
+            {{-- Page Numbers --}}
+            @foreach ($paginator->getUrlRange(1, $paginator->lastPage()) as $page => $url)
+                @if ($page == $paginator->currentPage())
+                    <span class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded"
+                        aria-current="page">{{ $page }}</span>
+                @elseif ($page >= $paginator->currentPage() - 2 && $page <= $paginator->currentPage() + 2)
+                    <a href="{{ $url }}"
+                        class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            {{-- Next --}}
+            @if ($paginator->hasMorePages())
+                <a href="{{ $paginator->nextPageUrl() }}"
+                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
+                    →</a>
+            @else
+                <span
+                    class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed"
+                    aria-disabled="true">Next →</span>
+            @endif
+        </div>
+    </nav>
+@endif

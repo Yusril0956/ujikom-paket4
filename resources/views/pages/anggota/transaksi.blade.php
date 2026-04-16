@@ -175,30 +175,7 @@
         </div>
 
         {{-- 4. PAGINATION --}}
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
-            <span class="text-xs font-mono text-muted">
-                Menampilkan {{ $transaksis->firstItem() ?? 0 }} - {{ $transaksis->lastItem() ?? 0 }} dari {{ $transaksis->total() }} transaksi
-            </span>
-            <nav class="flex items-center gap-2">
-                @if ($transaksis->onFirstPage())
-                <span class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">← Prev</span>
-                @else
-                <a href="{{ $transaksis->previousPageUrl() }}" class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">← Prev</a>
-                @endif
-                @foreach ($transaksis->getUrlRange(1, $transaksis->lastPage()) as $page => $url)
-                @if ($page == $transaksis->currentPage())
-                <span class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">{{ $page }}</span>
-                @elseif ($page >= $transaksis->currentPage() - 2 && $page <= $transaksis->currentPage() + 2)
-                    <a href="{{ $url }}" class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">{{ $page }}</a>
-                    @endif
-                    @endforeach
-                    @if ($transaksis->hasMorePages())
-                    <a href="{{ $transaksis->nextPageUrl() }}" class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next →</a>
-                    @else
-                    <span class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">Next →</span>
-                    @endif
-            </nav>
-        </div>
+        <x-pagination :paginator="$transaksis" />
 
         {{-- 5. INFO PANEL --}}
         <div class="border border-ink bg-surface p-4 flex items-start gap-3">

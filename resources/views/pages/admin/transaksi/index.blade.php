@@ -15,14 +15,18 @@
         </div>
 
         {{-- 2. FILTER & PENCARIAN --}}
-        <form method="GET" action="{{ route('admin.transaksi.index') }}" class="bg-surface border border-ink p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <form method="GET" action="{{ route('admin.transaksi.index') }}"
+            class="bg-surface border border-ink p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
             <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 <div class="relative flex-1 sm:w-64">
                     <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-coffee/60" />
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari ID, nama, atau judul..."
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari ID, nama, atau judul..."
                         class="w-full pl-9 pr-4 py-2 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/60 focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
                 </div>
-                <select name="status" class="px-3 py-2 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md" onchange="this.form.submit()">
+                <select name="status"
+                    class="px-3 py-2 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md"
+                    onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     <option value="pending" @selected(request('status') === 'pending')>Menunggu</option>
                     <option value="dipinjam" @selected(request('status') === 'dipinjam')>Dipinjam</option>
@@ -31,7 +35,8 @@
                     <option value="ditolak" @selected(request('status') === 'ditolak')>Ditolak</option>
                     <option value="expired" @selected(request('status') === 'expired')>Hangus</option>
                 </select>
-                <button type="submit" class="px-4 py-2 border border-ink bg-ink text-surface text-sm font-serif hover:bg-ink/90 rounded-md">Cari</button>
+                <button type="submit"
+                    class="px-4 py-2 border border-ink bg-ink text-surface text-sm font-serif hover:bg-ink/90 rounded-md">Cari</button>
             </div>
             <a href="{{ route('admin.transaksi.export') }}"
                 class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2 w-max">
@@ -166,44 +171,7 @@
         </div>
 
         {{-- Pagination --}}
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
-            <span class="text-xs font-mono text-muted">
-                Menampilkan {{ $transaksi->firstItem() ?? 0 }} - {{ $transaksi->lastItem() ?? 0 }} dari
-                {{ $transaksi->total() }} transaksi
-            </span>
-            <nav class="flex items-center gap-2">
-                {{-- Previous --}}
-                @if ($transaksi->onFirstPage())
-                    <span
-                        class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">←
-                        Prev</span>
-                @else
-                    <a href="{{ $transaksi->previousPageUrl() }}"
-                        class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">←
-                        Prev</a>
-                @endif
-                {{-- Page Numbers --}}
-                @foreach ($transaksi->getUrlRange(1, $transaksi->lastPage()) as $page => $url)
-                    @if ($page == $transaksi->currentPage())
-                        <span
-                            class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">{{ $page }}</span>
-                    @elseif ($page >= $transaksi->currentPage() - 2 && $page <= $transaksi->currentPage() + 2)
-                        <a href="{{ $url }}"
-                            class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">{{ $page }}</a>
-                    @endif
-                @endforeach
-                {{-- Next --}}
-                @if ($transaksi->hasMorePages())
-                    <a href="{{ $transaksi->nextPageUrl() }}"
-                        class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
-                        →</a>
-                @else
-                    <span
-                        class="px-3 py-1.5 border border-ink text-xs font-mono text-muted rounded opacity-50 cursor-not-allowed">Next
-                        →</span>
-                @endif
-            </nav>
-        </div>
+        <x-pagination :paginator="$transaksi" />
 
         {{-- 5. INFO PANEL --}}
         <div class="bg-surface border border-ink p-5">

@@ -19,9 +19,8 @@ class TransaksiController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Transaksi::with(['user', 'book']);
+        $query = Transaksi::with(['user', 'book', 'verifiedBy']);
 
-        // Search
         if ($request->filled('search')) {
             $query->search($request->search);
         }
@@ -34,16 +33,16 @@ class TransaksiController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
-        $transaksi = $query->latest()->paginate(15)->withQueryString();
+        $transaksi = $query->latest()->paginate(6)->withQueryString();
 
         Transaksi::pending()
             ->where('pickup_deadline', '<', now())
-            ->get()  // ← Ambil data dulu jadi Collection
+            ->get()  
             ->each->expire();
 
         Transaksi::active()
             ->where('due_date', '<', now()->toDateString())
-            ->get()  // ← Ambil data dulu jadi Collection
+            ->get()
             ->each->markOverdue();
 
         return view('pages.admin.transaksi.index', compact('transaksi'));

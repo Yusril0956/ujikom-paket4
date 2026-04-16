@@ -7,7 +7,7 @@
                 <h1 class="text-2xl font-serif font-bold text-ink tracking-tight">Profil Pengguna</h1>
                 <p class="text-muted mt-1 font-serif text-sm">Kelola informasi akun, preferensi, dan keamanan.</p>
             </div>
-            <a href="{{ auth()->user()->isMember() ? route('anggota.dashboard') : route('admin.dashboard') }}"
+            <a href="{{ auth()->user()->isAnggota() ? route('anggota.dashboard') : route('admin.dashboard') }}"
                 class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2 w-max">
                 <x-lucide-arrow-left class="w-4 h-4" /> Kembali
             </a>

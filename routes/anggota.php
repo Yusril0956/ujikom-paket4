@@ -50,27 +50,16 @@ Route::middleware('auth')->group(function () {
         return view('pages.anggota.dashboard', compact('borrowingStats', 'activeBorrowings', 'pendingBorrowings'));
     })->name('anggota.dashboard');
 
-    // ─────────────────────────────────────────────────────
-    // anggota TRANSACTION MANAGEMENT
-    // ─────────────────────────────────────────────────────
-
-
-    // ─────────────────────────────────────────────────────
-    // BOOK BORROWING REQUEST
-    // ─────────────────────────────────────────────────────
-
-    // Request to borrow a book (from book detail page)
     Route::post('/books/{book}/borrow', [AnggotaTransaksiController::class, 'borrow'])
         ->name('books.borrow');
 
     Route::get('/transaksi', [AnggotaTransaksiController::class, 'index'])
         ->name('anggota.transaksi');
 
-    // Return Book (Member Confirmation)
     Route::patch('/transaksi/{transaksi}/return', [AnggotaTransaksiController::class, 'returnBook'])
         ->name('anggota.transaksi.return');
 
-    // Receipt/Proof Page
+
     Route::get('/transaksi/receipt/{bookingCode}', [AnggotaTransaksiController::class, 'receipt'])
         ->name('anggota.transaksi.receipt');
 });

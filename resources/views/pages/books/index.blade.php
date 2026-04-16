@@ -22,7 +22,7 @@
                             <x-lucide-layout-dashboard class="w-4 h-4" /> Dashboard
                         </a>
                     </div>
-                @elseif(auth()->user()->isStaff())
+                @elseif(auth()->user()->isPetugas())
                     {{-- Petugas: Tambah Buku + Lihat Transaksi --}}
                     <div class="flex gap-2 w-max">
                         <a href="{{ route('admin.books.create') }}"
@@ -169,9 +169,7 @@
             </div>
 
             {{-- PAGINATION --}}
-            <div class="mt-6 border-t border-ink pt-4 flex justify-center">
-                {{ $books->links('pagination::tailwind') }}
-            </div>
+            <x-pagination :paginator="$books" />
         @else
             <div class="py-12 text-center bg-surface border border-dashed border-ink rounded">
                 <x-lucide-inbox class="w-12 h-12 text-muted/40 mx-auto mb-3" />
@@ -184,27 +182,6 @@
                 @endif
             </div>
         @endif
-
-        {{-- 4. PAGINATION --}}
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border border-ink bg-surface p-4">
-            <span class="text-xs font-mono text-muted">Menampilkan halaman 1 dari 156</span>
-            <nav class="flex items-center gap-2">
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-muted hover:bg-ink/5 hover:text-ink transition-colors rounded disabled:opacity-50"
-                    disabled>← Prev</button>
-                <button class="px-3 py-1.5 border border-ink bg-ink text-surface text-xs font-mono rounded">1</button>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">2</button>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">3</button>
-                <span class="text-muted">...</span>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">156</button>
-                <button
-                    class="px-3 py-1.5 border border-ink text-xs font-mono text-coffee hover:bg-ink/5 hover:text-ink transition-colors rounded">Next
-                    →</button>
-            </nav>
-        </div>
 
         {{-- 5. INFO PANEL --}}
         <div class="bg-surface border border-ink p-5">

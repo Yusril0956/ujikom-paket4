@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class Transaksi extends Model
 {
@@ -118,30 +119,32 @@ class Transaksi extends Model
         return $this->belongsTo(User::class, 'verified_by');
     }
 
-    // ── Actions ─────────────────────────────────────
     public function approve(User $admin): bool
     {
-        if ($this->status !== 'pending') return false;
+        return DB::transaction(function () use ($admin) {
+            // Lock user & book untuk atomic operation
+            $user = User::lockForUpdate()->find($this->user_id);
+            $book = Book::lockForUpdate()->find($this->book_id);
 
-        // Check book availability
-        if ($this->book->stock_available < 1) return false;
+            if ($this->status !== 'pending' || $book->stock_available < 1) {
+                return false;
+            }
 
-        // Check user borrowing limit (example: max 4 books)
-        $activeLoans = $this->user->transaksis()->active()->count();
-        if ($activeLoans >= 4) return false;
+            // Check limit with lock
+            $activeLoans = $user->transaksis()->active()->count();
+            if ($activeLoans >= 4) return false;
 
-        $this->update([
-            'status' => 'dipinjam',
-            'borrowed_date' => now()->toDateString(),
-            'due_date' => now()->addDays(7)->toDateString(),
-            'verified_by' => $admin->id,
-            'verified_at' => now(),
-        ]);
+            $this->update([
+                'status' => 'dipinjam',
+                'borrowed_date' => now()->toDateString(),
+                'due_date' => now()->addDays(7)->toDateString(),
+                'verified_by' => $admin->id,
+                'verified_at' => now(),
+            ]);
 
-        // Reduce book stock
-        $this->book->decrement('stock_available');
-
-        return true;
+            $book->decrement('stock_available');
+            return true;
+        });
     }
 
     public function reject(User $admin, string $reason): bool

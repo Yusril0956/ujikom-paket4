@@ -8,7 +8,7 @@
                 <p class="text-muted mt-1 font-serif text-sm">Kelola informasi akun, preferensi, dan keamanan.</p>
             </div>
             <a href="{{ auth()->user()->isAnggota() ? route('anggota.dashboard') : route('admin.dashboard') }}"
-                class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2 w-max">
+                class="w-full md:w-auto px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center justify-center gap-2">
                 <x-lucide-arrow-left class="w-4 h-4" /> Kembali
             </a>
         </div>
@@ -189,7 +189,7 @@
                             <p class="font-mono text-[10px] text-red-700 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                    <div class="flex gap-3">
+                    <div class="flex flex-col gap-3 sm:flex-row">
                         <button type="button"
                             onclick="document.getElementById('delete-user-form').classList.add('hidden')"
                             class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-colors rounded">

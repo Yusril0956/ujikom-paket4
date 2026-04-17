@@ -9,23 +9,23 @@
                 </p>
             </div>
             <a href="{{ route('admin.transaksi.create') }}"
-                class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center gap-2 w-max">
+                class="w-full md:w-auto px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center justify-center gap-2">
                 <x-lucide-plus-circle class="w-4 h-4" /> Buat Peminjaman
             </a>
         </div>
 
         {{-- 2. FILTER & PENCARIAN --}}
         <form method="GET" action="{{ route('admin.transaksi.index') }}"
-            class="bg-surface border border-ink p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <div class="relative flex-1 sm:w-64">
+            class="bg-surface border border-ink p-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex w-full flex-col gap-3 md:w-auto md:flex-row">
+                <div class="relative flex-1 md:min-w-[16rem]">
                     <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-coffee/60" />
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari ID, nama, atau judul..."
                         class="w-full pl-9 pr-4 py-2 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/60 focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
                 </div>
                 <select name="status"
-                    class="px-3 py-2 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md"
+                    class="w-full px-3 py-2 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md md:w-auto"
                     onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     <option value="pending" @selected(request('status') === 'pending')>Menunggu</option>
@@ -36,17 +36,17 @@
                     <option value="expired" @selected(request('status') === 'expired')>Hangus</option>
                 </select>
                 <button type="submit"
-                    class="px-4 py-2 border border-ink bg-ink text-surface text-sm font-serif hover:bg-ink/90 rounded-md">Cari</button>
+                    class="w-full px-4 py-2 border border-ink bg-ink text-surface text-sm font-serif hover:bg-ink/90 rounded-md md:w-auto">Cari</button>
             </div>
             <a href="{{ route('admin.transaksi.export') }}"
-                class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2 w-max">
+                class="w-full md:w-auto px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center justify-center gap-2">
                 <x-lucide-download class="w-4 h-4" /> Ekspor CSV
             </a>
         </form>
 
         {{-- 3. TABEL TRANSAKSI --}}
         <div class="bg-surface border border-ink overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="panel-table w-full text-sm">
                 <thead>
                     <tr class="border-b border-ink bg-ink/5">
                         <th class="text-left px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">ID</th>
@@ -99,7 +99,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex flex-wrap items-center justify-end gap-2">
                                     @if ($txn->status === 'pending')
                                         <form method="POST" action="{{ route('admin.transaksi.approve', $txn) }}"
                                             class="inline">

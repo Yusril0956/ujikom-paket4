@@ -8,7 +8,7 @@
                 <p class="text-muted mt-1 font-serif">Restore atau hapus permanen data pengguna yang sudah dihapus.</p>
             </div>
             <a href="{{ route('admin.users.index') }}"
-                class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2 w-max">
+                class="w-full md:w-auto px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center justify-center gap-2">
                 <x-lucide-arrow-left class="w-4 h-4" /> Kembali
             </a>
         </div>
@@ -58,7 +58,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="panel-table w-full text-sm">
                     <thead>
                         <tr class="border-b border-ink bg-ink/5">
                             <th class="text-left px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">ID</th>

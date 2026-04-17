@@ -7,7 +7,7 @@
                 <h1 class="text-3xl font-serif font-bold text-ink tracking-tight">Dashboard Perpustakaan</h1>
                 <p class="text-muted mt-1 font-serif">Ringkasan koleksi, aktivitas peminjaman, dan status sistem.</p>
             </div>
-            <div class="flex gap-3">
+            <div class="mobile-action-group">
                 <button
                     class="px-4 py-2.5 bg-surface border border-ink/20 text-sm font-serif text-coffee hover:text-ink hover:border-ink/40 transition-all rounded-md shadow-[var(--elevation-1)] flex items-center gap-2">
                     <x-lucide-plus class="w-4 h-4" /> Tambah Katalog
@@ -87,7 +87,7 @@
                         Arsip ›</a>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="panel-table w-full text-sm">
                         <thead>
                             <tr class="border-b border-ink/15 bg-ink/5">
                                 <th class="text-left px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">ID

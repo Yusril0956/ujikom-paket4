@@ -16,14 +16,14 @@
 <body class="bg-background text-ink antialiased">
 
     {{-- 1. navbar --}}
-    <nav class="fixed top-0 w-full bg-surface/95 backdrop-blur-sm border-b border-ink z-50" aria-label="Navigasi Utama">
+    <nav class="fixed top-0 z-50 w-full border-b border-ink bg-surface/95 backdrop-blur-sm" aria-label="Navigasi Utama">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex min-h-16 items-center justify-between gap-3 py-3">
 
-                <a href="/" class="flex items-center gap-2 group">
+                <a href="/" class="flex min-w-0 items-center gap-2 group">
                     <x-lucide-book-open
-                        class="w-6 h-6 text-ink stroke-[1.5] group-hover:text-coffee transition-colors" />
-                    <span class="font-serif text-lg font-bold tracking-[0.1em] uppercase text-ink">Scriptoria</span>
+                        class="h-6 w-6 shrink-0 text-ink stroke-[1.5] group-hover:text-coffee transition-colors" />
+                    <span class="truncate font-serif text-base font-bold tracking-[0.08em] uppercase text-ink sm:text-lg">Scriptoria</span>
                 </a>
 
                 <div class="hidden md:flex items-center gap-6">
@@ -36,17 +36,17 @@
                         class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tentang</a>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="hidden items-center gap-3 sm:flex">
                     @auth
                         @php
                             $role = auth()->user()->role ?? 'anggota';
                             $dashboardRoute = match ($role) {
                                 'admin', 'petugas' => route('admin.dashboard'),
-                                default => route('member.dashboard'),
+                                default => route('anggota.dashboard'),
                             };
                         @endphp
                         <a href="{{ $dashboardRoute }}"
-                            class="hidden sm:inline-flex px-4 py-2 border border-ink text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5 transition-colors rounded">
+                            class="inline-flex px-4 py-2 border border-ink text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5 transition-colors rounded">
                             Dashboard
                         </a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -58,7 +58,7 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}"
-                            class="hidden sm:inline-flex px-4 py-2 border border-ink text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5 transition-colors rounded">
+                            class="inline-flex px-4 py-2 border border-ink text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5 transition-colors rounded">
                             Masuk
                         </a>
                         <a href="{{ route('register') }}"
@@ -67,22 +67,58 @@
                         </a>
                     @endauth
                 </div>
+
+                <details class="relative sm:hidden">
+                    <summary class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md border border-ink bg-background text-coffee">
+                        <x-lucide-menu class="h-4 w-4" />
+                    </summary>
+                    <div class="absolute right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] space-y-2 border border-ink bg-surface p-3 shadow-[var(--elevation-2)]">
+                        <a href="#features"
+                            class="block rounded border border-ink/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:bg-ink/5 hover:text-ink">Fitur</a>
+                        <a href="#how-it-works"
+                            class="block rounded border border-ink/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:bg-ink/5 hover:text-ink">Cara Kerja</a>
+                        <a href="{{ route('about') }}"
+                            class="block rounded border border-ink/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:bg-ink/5 hover:text-ink">Tentang</a>
+                        @auth
+                            <a href="{{ $dashboardRoute }}"
+                                class="flex items-center justify-center rounded border border-ink px-3 py-2 text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5">
+                                Dashboard
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="flex w-full items-center justify-center rounded border border-ink bg-ink px-3 py-2 text-[10px] font-mono uppercase tracking-[0.15em] text-surface hover:bg-ink/90">
+                                    Logout
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}"
+                                class="flex items-center justify-center rounded border border-ink px-3 py-2 text-[10px] font-mono uppercase tracking-[0.15em] text-ink hover:bg-ink/5">
+                                Masuk
+                            </a>
+                            <a href="{{ route('register') }}"
+                                class="flex items-center justify-center rounded border border-ink bg-ink px-3 py-2 text-[10px] font-mono uppercase tracking-[0.15em] text-surface hover:bg-ink/90">
+                                Daftar Akun
+                            </a>
+                        @endauth
+                    </div>
+                </details>
             </div>
         </div>
     </nav>
 
     {{-- 2. hero --}}
-    <header class="relative pt-32 pb-20 px-4 border-b border-ink">
+    <header class="relative border-b border-ink px-4 pb-16 pt-28 sm:pb-20 sm:pt-32">
         <div class="max-w-4xl mx-auto text-center">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface border border-ink rounded mb-6">
+            <div class="mb-6 inline-flex max-w-full items-center gap-2 rounded border border-ink bg-surface px-3 py-1.5">
                 <x-lucide-sparkles class="w-3 h-3 text-coffee" />
-                <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Arsip Digital
+                <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-muted sm:tracking-[0.2em]">Arsip Digital
                     Terintegrasi</span>
             </div>
-            <h1 class="font-serif text-4xl md:text-6xl font-bold text-ink tracking-tight leading-[1.1]">
+            <h1 class="font-serif text-3xl font-bold text-ink tracking-tight leading-[1.1] sm:text-4xl md:text-6xl">
                 Jelajahi Pengetahuan,<br class="hidden md:block"> Lestarikan Warisan.
             </h1>
-            <p class="mt-6 font-serif text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+            <p class="mt-6 max-w-2xl mx-auto font-serif text-base leading-relaxed text-muted sm:text-lg">
                 Scriptoria adalah sistem manajemen perpustakaan modern yang dirancang untuk melestarikan,
                 mengatalogisasi, dan memudahkan akses terhadap koleksi buku fisik maupun digital.
             </p>
@@ -232,12 +268,12 @@
 
     {{-- 7. FOOTER --}}
     <footer class="py-10 px-4 bg-background">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="max-w-7xl mx-auto flex flex-col items-center justify-between gap-6 md:flex-row">
             <div class="flex items-center gap-2">
                 <x-lucide-book-open class="w-5 h-5 text-ink stroke-[1.5]" />
                 <span class="font-serif font-bold tracking-[0.1em] uppercase text-ink">Scriptoria</span>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex flex-wrap items-center justify-center gap-4">
                 <a href="{{ route('about') }}"
                     class="font-mono text-[10px] uppercase tracking-[0.2em] text-muted hover:text-ink transition-colors">Tentang</a>
                 <a href="{{ route('rules') }}"

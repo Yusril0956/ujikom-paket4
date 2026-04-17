@@ -116,7 +116,8 @@
 
                 <div class="border-l-2 border-ink pl-4">
                     <h3 class="font-mono text-xs uppercase tracking-wider text-coffee mb-2">3.3. Pelanggaran & Sanksi</h3>
-                    <table class="w-full text-sm mt-2">
+                    <div class="overflow-x-auto">
+                    <table class="panel-table w-full text-sm mt-2">
                         <thead>
                             <tr class="border-b border-ink">
                                 <th class="text-left py-2 font-mono text-xs text-muted">Pelanggaran</th>
@@ -142,6 +143,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </section>
@@ -151,7 +153,7 @@
             <p class="font-serif text-sm text-muted">
                 Dokumen ini berlaku sejak <span class="font-mono text-ink">1 Januari 2024</span> dan dapat diperbarui sewaktu-waktu.
             </p>
-            <div class="flex gap-3">
+            <div class="mobile-action-group">
                 <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center gap-2">
                     <x-lucide-arrow-left class="w-4 h-4" /> Kembali
                 </a>

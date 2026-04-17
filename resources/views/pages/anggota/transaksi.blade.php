@@ -7,20 +7,20 @@
                 <h1 class="text-3xl font-serif font-bold text-ink tracking-tight">Riwayat Peminjaman</h1>
                 <p class="text-muted mt-1 font-serif">Catatan lengkap aktivitas peminjaman dan pengembalian buku Anda.</p>
             </div>
-            <a href="{{ route('anggota.dashboard') }}" class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2 w-max">
+            <a href="{{ route('anggota.dashboard') }}" class="w-full md:w-auto px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center justify-center gap-2">
                 <x-lucide-arrow-left class="w-4 h-4" /> Kembali
             </a>
         </div>
 
         {{-- 2. FILTER & PENCARIAN --}}
-        <div class="bg-surface border border-ink p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <form method="GET" action="{{ route('anggota.transaksi') }}" class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <div class="relative flex-1 sm:w-72">
+        <div class="bg-surface border border-ink p-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <form method="GET" action="{{ route('anggota.transaksi') }}" class="flex w-full flex-col gap-3 md:w-auto md:flex-row">
+                <div class="relative flex-1 md:min-w-[18rem]">
                     <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-coffee/60" />
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul buku..."
                         class="w-full pl-9 pr-4 py-2 bg-background border border-ink text-sm font-serif text-ink placeholder:text-muted/60 focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
                 </div>
-                <select name="status" onchange="this.form.submit()" class="px-3 py-2 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
+                <select name="status" onchange="this.form.submit()" class="w-full px-3 py-2 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md md:w-auto">
                     <option value="">Semua Status</option>
                     <option value="dipinjam" {{ request('status') === 'dipinjam' ? 'selected' : '' }}>Sedang Dipinjam</option>
                     <option value="dikembalikan" {{ request('status') === 'dikembalikan' ? 'selected' : '' }}>Sudah Dikembalikan</option>
@@ -75,11 +75,11 @@
 
                     {{-- Center: Dates & Status --}}
                     <div class="flex flex-wrap items-center gap-4 md:gap-6 px-0 md:px-4 border-t border-ink pt-4 md:border-t-0 md:pt-0">
-                        <div class="text-center min-w-[80px]">
+                        <div class="min-w-0 text-center md:min-w-[80px]">
                             <p class="font-mono text-[10px] uppercase tracking-wider text-muted">Pinjam</p>
                             <p class="font-mono text-xs text-ink mt-1">{{ $txn->borrowed_date?->format('d M Y') ?? '-' }}</p>
                         </div>
-                        <div class="text-center min-w-[100px]">
+                        <div class="min-w-0 text-center md:min-w-[100px]">
                             <p class="font-mono text-[10px] uppercase tracking-wider text-muted">Jatuh Tempo</p>
                             <p class="font-mono text-xs {{ $txn->is_overdue && $txn->status !== 'dikembalikan' ? 'text-red-700 font-semibold' : 'text-ink' }} mt-1">
                                 {{ $txn->due_date?->format('d M Y') ?? '-' }}
@@ -93,14 +93,14 @@
                     </div>
 
                     {{-- Right: Fine & Actions --}}
-                    <div class="flex flex-col md:items-end gap-3 border-t border-ink pt-4 md:border-t-0 md:pt-0">
-                        <div class="text-right">
+                    <div class="flex flex-col gap-3 border-t border-ink pt-4 md:items-end md:border-t-0 md:pt-0">
+                        <div class="text-left md:text-right">
                             <p class="font-mono text-[10px] uppercase tracking-wider text-muted">Denda</p>
                             <p class="font-mono text-xs {{ $txn->fine_amount > 0 && !$txn->fine_paid ? 'text-red-700 font-semibold' : 'text-coffee' }} mt-1">
                                 {{ $txn->fine_amount > 0 ? 'Rp '.number_format($txn->fine_amount, 0, ',', '.') : '-' }}
                             </p>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex flex-col gap-2 sm:flex-row">
                             @if($txn->status === 'pending')
                                 {{-- Pending: Show pickup info --}}
                                 <a href="{{ route('anggota.transaksi.receipt', $txn->booking_code) }}"

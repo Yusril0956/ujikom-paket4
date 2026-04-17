@@ -12,7 +12,7 @@
             @if(auth()->check())
                 @if(auth()->user()->isAdmin())
                     {{-- Admin: Tambah Buku + Lihat Dashboard --}}
-                    <div class="flex gap-2 w-max">
+            <div class="mobile-action-group">
                         <a href="{{ route('admin.books.create') }}"
                             class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center gap-2">
                             <x-lucide-book-plus class="w-4 h-4" /> Tambah Buku
@@ -24,7 +24,7 @@
                     </div>
                 @elseif(auth()->user()->isPetugas())
                     {{-- Petugas: Tambah Buku + Lihat Transaksi --}}
-                    <div class="flex gap-2 w-max">
+                    <div class="mobile-action-group">
                         <a href="{{ route('admin.books.create') }}"
                             class="px-4 py-2.5 bg-amber-600 text-surface border border-amber-600 text-sm font-serif hover:bg-amber-700 transition-all rounded-md flex items-center gap-2">
                             <x-lucide-book-plus class="w-4 h-4" /> Tambah Buku
@@ -37,14 +37,14 @@
                 @else
                     {{-- Member: Lihat Transaksi Saya --}}
                     <a href="{{ route('anggota.transaksi') }}"
-                        class="px-4 py-2.5 border border-blue-600 bg-blue-50 text-sm font-serif text-blue-700 hover:bg-blue-100 transition-all rounded-md flex items-center gap-2 w-max">
+                        class="w-full md:w-auto px-4 py-2.5 border border-blue-600 bg-blue-50 text-sm font-serif text-blue-700 hover:bg-blue-100 transition-all rounded-md flex items-center justify-center gap-2">
                         <x-lucide-history class="w-4 h-4" /> Transaksi Saya
                     </a>
                 @endif
             @else
                 {{-- Guest: Tombol Login --}}
                 <a href="{{ route('login') }}"
-                    class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center gap-2">
+                    class="w-full md:w-auto px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center justify-center gap-2">
                     <x-lucide-log-in class="w-4 h-4" /> Masuk
                 </a>
             @endif
@@ -52,7 +52,7 @@
 
         {{-- 2. FILTER & PENCARIAN --}}
         <form method="GET" action="{{ route('books.index') }}" class="bg-surface border border-ink p-4">
-            <div class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="mobile-filter-grid">
                 <div class="flex-1">
                     <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Pencarian</label>
                     <div class="relative">
@@ -62,10 +62,10 @@
                             value="{{ request('search') }}">
                     </div>
                 </div>
-                <div>
+                <div class="w-full md:w-auto">
                     <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Kategori</label>
                     <select name="category"
-                        class="px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
+                        class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md md:w-auto">
                         <option value="">Semua Kategori</option>
                         <option value="Fiksi - Sastra Indonesia" @selected(request('category') === 'Fiksi - Sastra Indonesia')>Fiksi & Sastra Indonesia</option>
                         <option value="Filosofi & Spiritualitas" @selected(request('category') === 'Filosofi & Spiritualitas')>Filosofi & Spiritualitas</option>

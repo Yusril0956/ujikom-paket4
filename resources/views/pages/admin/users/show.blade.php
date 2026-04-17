@@ -3,7 +3,7 @@
         
         {{-- 1. HEADER PAGE --}}
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-ink pb-5">
-            <div class="flex items-center gap-4">
+            <div class="flex items-start gap-4">
                 <a href="{{ route('admin.users.index') }}" class="p-2 border border-ink rounded hover:bg-ink/5 transition-colors">
                     <x-lucide-arrow-left class="w-5 h-5 text-coffee" />
                 </a>
@@ -12,7 +12,7 @@
                     <p class="text-muted mt-1 font-serif text-sm">Profil lengkap, riwayat peminjaman, dan status keanggotaan.</p>
                 </div>
             </div>
-            <div class="flex gap-3">
+            <div class="mobile-action-group">
                 <button class="px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2">
                     <x-lucide-mail class="w-4 h-4" /> Kirim Notifikasi
                 </button>
@@ -36,15 +36,15 @@
                         {{ $user->status_label }}
                     </span>
                     <div class="mt-6 w-full space-y-3 text-left">
-                        <div class="flex justify-between border-b border-ink pb-2">
+                        <div class="flex flex-col gap-1 border-b border-ink pb-2 sm:flex-row sm:items-center sm:justify-between">
                             <span class="font-mono text-xs text-muted">Email</span>
                             <span class="font-serif text-sm text-ink">{{ $user->email }}</span>
                         </div>
-                        <div class="flex justify-between border-b border-ink pb-2">
+                        <div class="flex flex-col gap-1 border-b border-ink pb-2 sm:flex-row sm:items-center sm:justify-between">
                             <span class="font-mono text-xs text-muted">Telepon</span>
                             <span class="font-serif text-sm text-ink">{{ $user->phone ?? 'Belum ada' }}</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                             <span class="font-mono text-xs text-muted">Bergabung</span>
                             <span class="font-serif text-sm text-ink">{{ $user->created_at->format('d M Y') }}</span>
                         </div>
@@ -116,12 +116,12 @@
                 </div>
 
                 {{-- Active Loans Table --}}
-                <div class="bg-surface border border-ink">
+                <div class="bg-surface border border-ink overflow-hidden">
                     <div class="px-6 py-4 border-b border-ink flex items-center justify-between">
                         <h3 class="font-serif font-semibold text-ink">Peminjaman Aktif</h3>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
+                        <table class="panel-table w-full text-sm">
                             <thead>
                                 <tr class="border-b border-ink bg-ink/5">
                                     <th class="text-left px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">ID</th>

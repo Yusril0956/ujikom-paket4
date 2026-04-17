@@ -13,7 +13,7 @@
                     <p class="text-muted mt-1 font-serif text-sm">Informasi lengkap koleksi dan riwayat peminjaman.</p>
                 </div>
             </div>
-            <div class="flex gap-2">
+            <div class="mobile-action-group">
                 {{-- Admin Actions --}}
                 @if(auth()->check() && auth()->user()->isAdmin())
                     <a href="{{ route('admin.books.edit', $book) }}"
@@ -154,7 +154,7 @@
                         <h3 class="font-serif font-semibold text-ink">Riwayat Peminjaman Terkini</h3>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
+                    <table class="panel-table w-full text-sm">
                             <thead>
                                 <tr class="border-b border-ink bg-ink/5">
                                     <th class="text-left px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">ID</th>
@@ -239,7 +239,7 @@
                     </div>
 
                     {{-- Action Buttons --}}
-                    <div class="flex gap-3 pt-4 border-t border-ink">
+                    <div class="flex flex-col gap-3 border-t border-ink pt-4 sm:flex-row">
                         <button type="button" onclick="closeBorrowModal()"
                             class="flex-1 px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md">
                             Batal

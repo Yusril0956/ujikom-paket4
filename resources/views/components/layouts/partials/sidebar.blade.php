@@ -1,5 +1,15 @@
-<aside class="w-64 bg-surface border-r border-ink flex flex-col h-full">
-    <div class="p-6 text-center border-b border-ink">
+<aside
+    class="fixed inset-y-0 left-0 z-50 flex h-full w-72 max-w-[85vw] -translate-x-full flex-col border-r border-ink bg-surface transition-transform duration-200 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0"
+    data-sidebar-panel>
+    <div class="border-b border-ink p-5 text-center sm:p-6">
+        <div class="mb-4 flex items-center justify-between lg:hidden">
+            <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">Navigasi</span>
+            <button type="button"
+                class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-ink bg-background text-coffee"
+                data-sidebar-close aria-label="Tutup menu">
+                <x-lucide-x class="h-4 w-4" />
+            </button>
+        </div>
 
         <a href="/" class="block mb-2">
             <x-lucide-book-open class="w-7 h-7 mx-auto text-ink mb-3 stroke-[1.5]" />
@@ -37,7 +47,7 @@
         @endif
     </div>
 
-    <nav class="flex-1 overflow-y-auto py-6">
+    <nav class="flex-1 overflow-y-auto py-4 sm:py-6">
 
         @if (auth()->check()) {{-- ═══════════════════════════════════════════════════════ --}}
             {{-- 1. DASHBOARD (Semua Role) --}}
@@ -112,7 +122,7 @@
         @endif
     </nav>
 
-    <div class="flex-shrink-0 p-6 border-t border-ink bg-[#f9f7f1] space-y-2">
+    <div class="flex-shrink-0 space-y-2 border-t border-ink bg-[#f9f7f1] p-4 sm:p-6">
         @if (auth()->check())
             {{-- User Profile --}}
             <a href="{{ route('profile.edit') }}"

@@ -3,7 +3,7 @@
 
         {{-- 1. HEADER PAGE --}}
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-ink pb-5">
-            <div class="flex items-center gap-4">
+            <div class="flex items-start gap-4">
                 <a href="{{ route('admin.transaksi.index') }}"
                     class="p-2 border border-ink rounded hover:bg-ink/5 transition-colors">
                     <x-lucide-arrow-left class="w-5 h-5 text-coffee" />
@@ -13,7 +13,7 @@
                     <p class="text-muted mt-1 font-serif text-sm">Riwayat lengkap, log status, dan aksi peminjaman.</p>
                 </div>
             </div>
-            <div class="flex gap-3">
+            <div class="mobile-action-group md:items-center md:justify-end">
                 <span
                     class="px-3 py-1.5 border border-ink {{ $transaksi->status_badge['bg'] }} text-xs font-mono uppercase tracking-wider {{ $transaksi->status_badge['text'] }} rounded">{{ $transaksi->status_badge['label'] }}</span>
                 <button
@@ -40,7 +40,7 @@
                         </div>
                         <div>
                             <p class="font-mono text-xs uppercase tracking-wider text-coffee mb-1">Jatuh Tempo</p>
-                            <p class="font-serif {% if $transaksi->is_overdue %}text-red-700 font-semibold{% else %}text-ink{% endif %} text-lg">{{ $transaksi->due_date?->format('d M Y') ?? '-' }}</p>
+                            <p class="font-serif text-lg {{ $transaksi->is_overdue ? 'text-red-700 font-semibold' : 'text-ink' }}">{{ $transaksi->due_date?->format('d M Y') ?? '-' }}</p>
                         </div>
                         <div>
                             <p class="font-mono text-xs uppercase tracking-wider text-coffee mb-1">Buku Dipinjam</p>
@@ -62,13 +62,13 @@
                 <div class="bg-surface border border-ink p-6">
                     <h2 class="text-lg font-serif font-semibold text-ink border-b border-ink pb-3 mb-4">Data Peminjam
                     </h2>
-                    <div class="flex items-start gap-4">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
                         <img src="{{ asset('storage/' . $transaksi->user->avatar) }}" alt="{{ $transaksi->user->name }}" 
-                            class="w-16 h-16 bg-background border border-ink rounded-full object-cover">
+                            class="h-16 w-16 bg-background border border-ink rounded-full object-cover">
                         <div>
                             <h3 class="font-serif text-xl font-bold text-ink">{{ $transaksi->user->name }}</h3>
                             <p class="font-mono text-sm text-coffee mt-1">{{ $transaksi->user->formatted_id }} | {{ ucfirst($transaksi->user->role) }} | {{ ucfirst($transaksi->user->status) }}</p>
-                            <p class="font-serif text-sm text-muted mt-2">{{ $transaksi->user->email }} | {{ $transaksi->user->phone }}</p>
+                            <p class="font-serif text-sm text-muted mt-2 break-all">{{ $transaksi->user->email }}{{ $transaksi->user->phone ? ' | ' . $transaksi->user->phone : '' }}</p>
                         </div>
                     </div>
                 </div>
@@ -130,11 +130,11 @@
                     <div class="bg-red-50 border border-red-700 p-5 rounded">
                         <h3 class="font-serif font-semibold text-red-700 mb-3">⚠ Informasi Denda</h3>
                         <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
+                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                 <span class="font-mono text-muted">Jumlah Denda:</span>
                                 <span class="font-serif font-bold text-red-700">Rp {{ number_format($transaksi->fine_amount) }}</span>
                             </div>
-                            <div class="flex justify-between">
+                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                 <span class="font-mono text-muted">Status Pembayaran:</span>
                                 <span class="font-serif {{ $transaksi->fine_paid ? 'text-green-700' : 'text-red-700' }}">
                                     {{ $transaksi->fine_paid ? '✓ Sudah Dibayar' : 'Belum Dibayar' }}

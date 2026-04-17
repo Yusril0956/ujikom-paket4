@@ -9,7 +9,7 @@
                     Halo, {{ auth()->user()->name }}. Berikut ringkasan aktivitas peminjaman Anda.
                 </p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="mobile-action-group">
                 <span class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider border border-ink rounded text-coffee bg-surface">
                     {{ ucfirst(auth()->user()->role) }}
                 </span>
@@ -123,7 +123,7 @@
 
                     @if($activeLoans > 0)
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
+                        <table class="panel-table w-full text-sm">
                             <thead>
                                 <tr class="border-b border-ink bg-ink/5">
                                     <th class="text-left px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">Judul</th>

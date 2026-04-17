@@ -49,7 +49,7 @@
                 </div>
 
                 {{-- Status --}}
-                <div class="border border-ink p-3 bg-background flex items-center justify-center gap-2">
+                <div class="flex flex-col items-center justify-center gap-2 border border-ink bg-background p-3 text-center sm:flex-row">
                     @if ($transaksi->status === 'pending')
                         <x-lucide-clock class="w-4 h-4 text-coffee" />
                     @elseif ($transaksi->status === 'expired')

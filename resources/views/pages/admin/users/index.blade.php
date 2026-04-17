@@ -7,13 +7,13 @@
                 <h1 class="text-3xl font-serif font-bold text-ink tracking-tight">Data Pengguna Perpustakaan</h1>
                 <p class="text-muted mt-1 font-serif">Manajemen anggota, status keanggotaan, dan riwayat akun.</p>
             </div>
-            <div class="flex gap-2">
+            <div class="mobile-action-group">
                 <a href="{{ route('admin.users.trashed') }}"
                     class="px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2">
                     <x-lucide-trash-2 class="w-4 h-4" /> Data Terhapus
                 </a>
                 <a href="{{ route('admin.users.create') }}"
-                    class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md shadow-[var(--elevation-1)] flex items-center gap-2 w-max">
+                    class="w-full md:w-auto px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md shadow-[var(--elevation-1)] flex items-center justify-center gap-2">
                     <x-lucide-user-plus class="w-4 h-4" /> Tambah Anggota
                 </a>
             </div>
@@ -29,7 +29,7 @@
 
         {{-- 2. FILTER & PENCARIAN --}}
         <form method="GET" action="{{ route('admin.users.index') }}" class="bg-surface border border-ink p-4">
-            <div class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_auto_auto_auto] md:items-end">
                 <div class="flex-1">
                     <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Pencarian</label>
                     <div class="relative">
@@ -40,10 +40,10 @@
                     </div>
                 </div>
 
-                <div>
+                <div class="w-full md:w-auto">
                     <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Status</label>
                     <select name="status"
-                        class="px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
+                        class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md md:w-auto">
                         <option value="">Semua Status</option>
                         <option value="aktif" @selected(request('status')==='aktif' )>Aktif</option>
                         <option value="pending" @selected(request('status')==='pending' )>Pending</option>
@@ -51,10 +51,10 @@
                     </select>
                 </div>
 
-                <div>
+                <div class="w-full md:w-auto">
                     <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Role</label>
                     <select name="role"
-                        class="px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md">
+                        class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-coffee focus:outline-none focus:ring-1 focus:ring-ink rounded-md md:w-auto">
                         <option value="">Semua Role</option>
                         <option value="admin" @selected(request('role')==='admin' )>Admin</option>
                         <option value="petugas" @selected(request('role')==='petugas' )>Petugas</option>
@@ -88,7 +88,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="panel-table w-full text-sm">
                     <thead>
                         <tr class="border-b border-ink bg-ink/5">
                             <th class="text-left px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted">ID

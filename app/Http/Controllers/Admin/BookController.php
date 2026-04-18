@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookStoreRequest;
 use App\Models\Book;
+use App\Services\Exports\XlsxReportExporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Exception;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BookController extends Controller
 {
@@ -39,6 +41,80 @@ class BookController extends Controller
         $books = $query->orderBy('created_at', 'desc')->paginate(6)->withQueryString();
 
         return view('pages.books.index', compact('books'));
+    }
+
+    public function export(Request $request, XlsxReportExporter $exporter): BinaryFileResponse
+    {
+        $query = Book::query();
+
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('availability_status', $request->status);
+        }
+
+        if (!auth()->check() || auth()->user()->isAnggota()) {
+            $query->publik();
+        }
+
+        $query->withoutTrashed();
+
+        $books = $query->orderBy('created_at', 'desc')->get();
+
+        $summary = $exporter->buildSummaryLines([
+            ['label' => 'Pencarian', 'value' => $request->search ?: 'Semua'],
+            ['label' => 'Kategori', 'value' => $request->category ?: 'Semua'],
+            ['label' => 'Status', 'value' => $request->status ?: 'Semua'],
+            ['label' => 'Total', 'value' => $books->count()],
+        ]);
+
+        $filePath = $exporter->export(
+            'data-buku',
+            'Data Buku',
+            'Scriptoria | Export Data Buku',
+            'Laporan katalog buku, metadata, klasifikasi, dan status ketersediaan.',
+            [
+                ['header' => 'ID', 'width' => 16],
+                ['header' => 'Judul', 'width' => 30],
+                ['header' => 'Pengarang', 'width' => 24],
+                ['header' => 'Penerbit', 'width' => 22],
+                ['header' => 'Tahun', 'width' => 12],
+                ['header' => 'ISBN', 'width' => 18],
+                ['header' => 'Kategori', 'width' => 24],
+                ['header' => 'Status', 'width' => 16],
+                ['header' => 'Stok Total', 'width' => 12],
+                ['header' => 'Stok Tersedia', 'width' => 14],
+                ['header' => 'Publik', 'width' => 12],
+            ],
+            $books->map(fn (Book $book) => [
+                $book->formatted_id,
+                $book->title,
+                $book->author,
+                $book->publisher ?? '-',
+                $book->published_year ?? '-',
+                $book->isbn ?? '-',
+                $book->category,
+                $book->status_badge['label'],
+                $book->stock_total,
+                $book->stock_available,
+                $book->is_public ? 'Ya' : 'Tidak',
+            ])->all(),
+            ['summary' => $summary]
+        );
+
+        return response()
+            ->download(
+                $filePath,
+                'data-buku-' . now()->format('Y-m-d_His') . '.xlsx',
+                ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+            )
+            ->deleteFileAfterSend(true);
     }
 
     public function create(): View

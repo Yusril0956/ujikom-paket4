@@ -6,6 +6,10 @@
                 <p class="text-muted mt-1 font-serif">Manajemen anggota, status keanggotaan, dan riwayat akun.</p>
             </div>
             <div class="mobile-action-group">
+                <a href="{{ route('admin.users.export', request()->query()) }}"
+                    class="px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2">
+                    <x-lucide-download class="w-4 h-4" /> Ekspor Excel
+                </a>
                 <a href="{{ route('admin.users.trashed') }}"
                     class="px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2">
                     <x-lucide-trash-2 class="w-4 h-4" /> Data Terhapus

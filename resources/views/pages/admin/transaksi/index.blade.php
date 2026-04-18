@@ -8,10 +8,16 @@
                 <p class="text-muted mt-1 font-serif">Riwayat peminjaman, pengembalian, dan status keterlambatan koleksi.
                 </p>
             </div>
-            <a href="{{ route('admin.transaksi.create') }}"
-                class="w-full md:w-auto px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center justify-center gap-2">
-                <x-lucide-plus-circle class="w-4 h-4" /> Buat Peminjaman
-            </a>
+            <div class="mobile-action-group">
+                <a href="{{ route('admin.transaksi.export', request()->query()) }}"
+                    class="w-full md:w-auto px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center justify-center gap-2">
+                    <x-lucide-download class="w-4 h-4" /> Ekspor Excel
+                </a>
+                <a href="{{ route('admin.transaksi.create') }}"
+                    class="w-full md:w-auto px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center justify-center gap-2">
+                    <x-lucide-plus-circle class="w-4 h-4" /> Buat Peminjaman
+                </a>
+            </div>
         </div>
 
         {{-- 2. FILTER & PENCARIAN --}}
@@ -38,10 +44,6 @@
                 <button type="submit"
                     class="w-full px-4 py-2 border border-ink bg-ink text-surface text-sm font-serif hover:bg-ink/90 rounded-md md:w-auto">Cari</button>
             </div>
-            <a href="{{ route('admin.transaksi.export') }}"
-                class="w-full md:w-auto px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center justify-center gap-2">
-                <x-lucide-download class="w-4 h-4" /> Ekspor CSV
-            </a>
         </form>
 
         {{-- 3. TABEL TRANSAKSI --}}

@@ -9,10 +9,14 @@
             </div>
             
             {{-- Role-Based Action Buttons --}}
-            @if(auth()->check())
+                @if(auth()->check())
                 @if(auth()->user()->isAdmin())
                     {{-- Admin: Tambah Buku + Lihat Dashboard --}}
             <div class="mobile-action-group">
+                        <a href="{{ route('admin.books.export', request()->query()) }}"
+                            class="px-4 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center gap-2">
+                            <x-lucide-download class="w-4 h-4" /> Ekspor Excel
+                        </a>
                         <a href="{{ route('admin.books.create') }}"
                             class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center gap-2">
                             <x-lucide-book-plus class="w-4 h-4" /> Tambah Buku
@@ -25,6 +29,10 @@
                 @elseif(auth()->user()->isPetugas())
                     {{-- Petugas: Tambah Buku + Lihat Transaksi --}}
                     <div class="mobile-action-group">
+                        <a href="{{ route('admin.books.export', request()->query()) }}"
+                            class="px-4 py-2.5 border border-amber-600 bg-amber-50 text-sm font-serif text-amber-700 hover:bg-amber-100 transition-all rounded-md flex items-center gap-2">
+                            <x-lucide-download class="w-4 h-4" /> Ekspor Excel
+                        </a>
                         <a href="{{ route('admin.books.create') }}"
                             class="px-4 py-2.5 bg-amber-600 text-surface border border-amber-600 text-sm font-serif hover:bg-amber-700 transition-all rounded-md flex items-center gap-2">
                             <x-lucide-book-plus class="w-4 h-4" /> Tambah Buku

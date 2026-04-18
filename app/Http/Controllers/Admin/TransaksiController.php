@@ -7,10 +7,12 @@ use App\Http\Requests\TransaksiStoreRequest;
 use App\Models\Book;
 use App\Models\Transaksi;
 use App\Models\User;
+use App\Services\Exports\XlsxReportExporter;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TransaksiController extends Controller
 {
@@ -167,36 +169,74 @@ class TransaksiController extends Controller
         return view('pages.admin.transaksi.bukti', compact('transaksi'));
     }
 
-    public function export(Request $request)
+    public function export(Request $request, XlsxReportExporter $exporter): BinaryFileResponse
     {
-        $transaksis = Transaksi::with(['user', 'book'])
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->get();
+        $query = Transaksi::with(['user', 'book', 'verifiedBy']);
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="transaksi-' . date('Y-m-d') . '.csv"',
-        ];
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
 
-        $callback = function () use ($transaksis) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, ['ID', 'Booking Code', 'Anggota', 'Buku', 'Pinjam', 'Kembali', 'Status', 'Denda']);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
-            foreach ($transaksis as $txn) {
-                fputcsv($file, [
-                    $txn->formatted_id,
-                    $txn->booking_code,
-                    $txn->user->name,
-                    $txn->book->title,
-                    $txn->borrowed_date?->format('d/m/Y'),
-                    $txn->due_date?->format('d/m/Y'),
-                    $txn->status,
-                    $txn->fine_amount > 0 ? 'Rp ' . number_format($txn->fine_amount) : '-',
-                ]);
-            }
-            fclose($file);
-        };
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
 
-        return response()->stream($callback, 200, $headers);
+        $transaksis = $query->latest()->get();
+        $memberFilter = $request->filled('user_id')
+            ? (User::find($request->user_id)?->name ?? $request->user_id)
+            : 'Semua';
+
+        $summary = $exporter->buildSummaryLines([
+            ['label' => 'Pencarian', 'value' => $request->search ?: 'Semua'],
+            ['label' => 'Status', 'value' => $request->status ?: 'Semua'],
+            ['label' => 'Anggota', 'value' => $memberFilter],
+            ['label' => 'Total', 'value' => $transaksis->count()],
+        ]);
+
+        $filePath = $exporter->export(
+            'data-transaksi',
+            'Data Transaksi',
+            'Scriptoria | Export Data Peminjaman',
+            'Laporan transaksi peminjaman, pengembalian, keterlambatan, dan denda.',
+            [
+                ['header' => 'ID', 'width' => 16],
+                ['header' => 'Kode Booking', 'width' => 18],
+                ['header' => 'Anggota', 'width' => 24],
+                ['header' => 'Buku', 'width' => 28],
+                ['header' => 'Pinjam', 'width' => 14],
+                ['header' => 'Jatuh Tempo', 'width' => 14],
+                ['header' => 'Kembali', 'width' => 14],
+                ['header' => 'Status', 'width' => 16],
+                ['header' => 'Denda', 'width' => 14],
+                ['header' => 'Petugas', 'width' => 20],
+                ['header' => 'Dibuat', 'width' => 16],
+            ],
+            $transaksis->map(fn (Transaksi $txn) => [
+                $txn->formatted_id,
+                $txn->booking_code,
+                $txn->user?->name ?? '-',
+                $txn->book?->title ?? '[Buku Dihapus]',
+                $txn->borrowed_date?->format('d M Y') ?? '-',
+                $txn->due_date?->format('d M Y') ?? '-',
+                $txn->returned_date?->format('d M Y') ?? '-',
+                $txn->status_badge['label'],
+                $txn->fine_amount > 0 ? 'Rp ' . number_format($txn->fine_amount) : '-',
+                $txn->verifiedBy?->name ?? '-',
+                $txn->created_at?->format('d M Y'),
+            ])->all(),
+            ['summary' => $summary]
+        );
+
+        return response()
+            ->download(
+                $filePath,
+                'data-transaksi-' . now()->format('Y-m-d_His') . '.xlsx',
+                ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+            )
+            ->deleteFileAfterSend(true);
     }
 }

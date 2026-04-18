@@ -53,6 +53,7 @@ Route::middleware(['auth', 'role:admin,petugas'])
         // ─────────────────────────────────────────────────────
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::get('/export', [UserController::class, 'export'])->name('export');
             Route::get('/create', [UserController::class, 'create'])->name('create');
             Route::post('/', [UserController::class, 'store'])->name('store');
             Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
@@ -70,6 +71,7 @@ Route::middleware(['auth', 'role:admin,petugas'])
         // ─────────────────────────────────────────────────────
         Route::prefix('books')->name('books.')->group(function () {
             Route::get('/', [BookController::class, 'index'])->name('index');
+            Route::get('/export', [BookController::class, 'export'])->name('export');
             Route::get('/create', [BookController::class, 'create'])->name('create');
             Route::post('/', [BookController::class, 'store'])->name('store');
             Route::get('/{book}', [BookController::class, 'show'])->name('show');
@@ -83,7 +85,7 @@ Route::middleware(['auth', 'role:admin,petugas'])
         // TRANSACTION MANAGEMENT
         // ─────────────────────────────────────────────────────
         Route::prefix('transaksi')->name('transaksi.')->group(function () {
-            Route::get('/export/data', [TransaksiController::class, 'export'])->name('export');
+            Route::get('/export', [TransaksiController::class, 'export'])->name('export');
 
             Route::get('/', [TransaksiController::class, 'index'])->name('index');
             Route::get('/create', [TransaksiController::class, 'create'])->name('create');

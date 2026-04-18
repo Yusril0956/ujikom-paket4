@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Services\Exports\XlsxReportExporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class UserController extends Controller
 {
@@ -32,6 +34,66 @@ class UserController extends Controller
         $users = $query->orderBy('created_at', 'desc')->paginate(5)->withQueryString();
 
         return view('pages.admin.users.index', compact('users'));
+    }
+
+    public function export(Request $request, XlsxReportExporter $exporter): BinaryFileResponse
+    {
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->get();
+
+        $summary = $exporter->buildSummaryLines([
+            ['label' => 'Pencarian', 'value' => $request->search ?: 'Semua'],
+            ['label' => 'Status', 'value' => $request->status ?: 'Semua'],
+            ['label' => 'Peran', 'value' => $request->role ?: 'Semua'],
+            ['label' => 'Total', 'value' => $users->count()],
+        ]);
+
+        $filePath = $exporter->export(
+            'data-pengguna',
+            'Data Pengguna',
+            'Scriptoria | Export Data Pengguna',
+            'Laporan pengguna aktif, status keanggotaan, dan informasi kontak.',
+            [
+                ['header' => 'ID', 'width' => 16],
+                ['header' => 'Nama Lengkap', 'width' => 26],
+                ['header' => 'Email', 'width' => 28],
+                ['header' => 'Telepon', 'width' => 18],
+                ['header' => 'Peran', 'width' => 16],
+                ['header' => 'Status', 'width' => 16],
+                ['header' => 'Bergabung', 'width' => 16],
+            ],
+            $users->map(fn (User $user) => [
+                $user->formatted_id,
+                $user->name,
+                $user->email,
+                $user->phone ?? '-',
+                $user->role_label,
+                $user->status_label,
+                $user->created_at?->format('d M Y'),
+            ])->all(),
+            ['summary' => $summary]
+        );
+
+        return response()
+            ->download(
+                $filePath,
+                'data-pengguna-' . now()->format('Y-m-d_His') . '.xlsx',
+                ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+            )
+            ->deleteFileAfterSend(true);
     }
 
     public function create()

@@ -71,7 +71,11 @@
                         <tr class="hover:bg-ink/5 transition-colors">
                             <td class="px-6 py-4 font-mono text-coffee">{{ $txn->formatted_id }}</td>
                             <td class="px-6 py-4 font-serif text-ink">
-                                {{ $txn->user->name }}
+                                @if($txn->user)
+                                    {{ $txn->user->name }}
+                                @else
+                                    <span class="text-muted/50 italic">[User Dihapus]</span>
+                                @endif
                                 @if ($txn->booking_code && $txn->status === 'pending')
                                     <p class="font-mono text-[10px] text-coffee mt-1">{{ $txn->booking_code }}</p>
                                 @endif

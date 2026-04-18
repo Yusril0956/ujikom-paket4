@@ -62,15 +62,21 @@
                 <div class="bg-surface border border-ink p-6">
                     <h2 class="text-lg font-serif font-semibold text-ink border-b border-ink pb-3 mb-4">Data Peminjam
                     </h2>
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
-                        <img src="{{ asset('storage/' . $transaksi->user->avatar) }}" alt="{{ $transaksi->user->name }}" 
-                            class="h-16 w-16 bg-background border border-ink rounded-full object-cover">
-                        <div>
-                            <h3 class="font-serif text-xl font-bold text-ink">{{ $transaksi->user->name }}</h3>
-                            <p class="font-mono text-sm text-coffee mt-1">{{ $transaksi->user->formatted_id }} | {{ ucfirst($transaksi->user->role) }} | {{ ucfirst($transaksi->user->status) }}</p>
-                            <p class="font-serif text-sm text-muted mt-2 break-all">{{ $transaksi->user->email }}{{ $transaksi->user->phone ? ' | ' . $transaksi->user->phone : '' }}</p>
+                    @if($transaksi->user)
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+                            <img src="{{ asset('storage/' . $transaksi->user->avatar) }}" alt="{{ $transaksi->user->name }}" 
+                                class="h-16 w-16 bg-background border border-ink rounded-full object-cover">
+                            <div>
+                                <h3 class="font-serif text-xl font-bold text-ink">{{ $transaksi->user->name }}</h3>
+                                <p class="font-mono text-sm text-coffee mt-1">{{ $transaksi->user->formatted_id }} | {{ ucfirst($transaksi->user->role) }} | {{ ucfirst($transaksi->user->status) }}</p>
+                                <p class="font-serif text-sm text-muted mt-2 break-all">{{ $transaksi->user->email }}{{ $transaksi->user->phone ? ' | ' . $transaksi->user->phone : '' }}</p>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="py-4 text-muted/50 italic">
+                            <p>User telah dihapus dari sistem</p>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Activity Timeline --}}

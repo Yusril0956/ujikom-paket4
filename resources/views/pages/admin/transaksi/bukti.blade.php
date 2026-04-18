@@ -30,8 +30,12 @@
                     </div>
                     <div class="border border-ink p-4">
                         <p class="font-mono text-[10px] uppercase tracking-wider text-muted mb-1">Peminjam</p>
-                        <p class="font-serif text-ink font-semibold text-base">{{ $transaksi->user->name }}</p>
-                        <p class="font-mono text-xs text-coffee mt-1">{{ $transaksi->user->formatted_id }} | {{ ucfirst($transaksi->user->role) }}</p>
+                        @if($transaksi->user)
+                            <p class="font-serif text-ink font-semibold text-base">{{ $transaksi->user->name }}</p>
+                            <p class="font-mono text-xs text-coffee mt-1">{{ $transaksi->user->formatted_id }} | {{ ucfirst($transaksi->user->role) }}</p>
+                        @else
+                            <p class="font-serif text-muted/50 italic">[User Dihapus]</p>
+                        @endif
                     </div>
                 </div>
 

@@ -12,10 +12,6 @@
                     class="px-4 py-2.5 bg-surface border border-ink/20 text-sm font-serif text-coffee hover:text-ink hover:border-ink/40 transition-all rounded-md shadow-[var(--elevation-1)] flex items-center gap-2">
                     <x-lucide-plus class="w-4 h-4" /> Tambah Katalog
                 </button>
-                <button
-                    class="px-4 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md shadow-[var(--elevation-1)] flex items-center gap-2">
-                    <x-lucide-download class="w-4 h-4" /> Ekspor Laporan
-                </button>
             </div>
         </div>
 

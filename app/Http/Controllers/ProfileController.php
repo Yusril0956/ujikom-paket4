@@ -14,9 +14,6 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit(Request $request): View
     {
         return view('pages.profile.index', [
@@ -24,12 +21,14 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
+
+        if ($user->id !== auth()->id()) {
+            abort(403, 'Anda hanya dapat mengubah profil Anda sendiri.');
+        }
+
         $validated = $request->validated();
 
         if ($request->hasFile('avatar')) {
@@ -62,9 +61,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'Profil berhasil diperbarui.');
     }
 
-    /**
-     * Delete the user's account.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

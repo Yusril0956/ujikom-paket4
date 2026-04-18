@@ -7,21 +7,17 @@ use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         $user = auth()->user();
         return $user && in_array($user->role, ['admin', 'petugas']);
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         $userId = $this->route('user')?->id;
+        $authUser = auth()->user();
+        $isCreate = $this->isMethod('post');
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -40,7 +36,9 @@ class UserRequest extends FormRequest
             ],
             'role' => [
                 'required',
-                Rule::in(['admin', 'petugas', 'anggota']),
+                $authUser->isAdmin()
+                    ? Rule::in(['admin', 'petugas', 'anggota'])
+                    : Rule::in(['anggota']),
             ],
             'status' => [
                 'required',
@@ -52,18 +50,20 @@ class UserRequest extends FormRequest
                 'mimes:jpg,jpeg,png,webp',
                 'max:2048',
             ],
-            'admin_notes' => ['nullable', 'string', 'max:1000'],
-            'password' => $this->isMethod('post')
+            // Hanya admin yang bisa set admin_notes
+            'admin_notes' => $authUser->isAdmin()
+                ? ['nullable', 'string', 'max:1000']
+                : ['prohibited'],
+            'password' => $isCreate
                 ? ['required', 'string', 'min:8', 'confirmed']
                 : ['nullable', 'string', 'min:8', 'confirmed'],
         ];
     }
 
-    /**
-     * Get custom error messages.
-     */
     public function messages(): array
     {
+        $authUser = auth()->user();
+        
         return [
             'name.required' => 'Nama lengkap harus diisi.',
             'name.max' => 'Nama maksimal 255 karakter.',
@@ -73,7 +73,9 @@ class UserRequest extends FormRequest
             'phone.regex' => 'Format nomor telepon tidak valid.',
             'id_number.unique' => 'ID/NIM/NIP sudah terdaftar di sistem.',
             'role.required' => 'Tipe keanggotaan harus dipilih.',
-            'role.in' => 'Tipe keanggotaan tidak valid.',
+            'role.in' => $authUser->isAdmin()
+                ? 'Tipe keanggotaan tidak valid.'
+                : 'Petugas hanya bisa membuat user dengan role Anggota.',
             'status.required' => 'Status harus dipilih.',
             'status.in' => 'Status tidak valid.',
             'avatar.image' => 'File harus berupa gambar.',
@@ -83,22 +85,18 @@ class UserRequest extends FormRequest
             'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak sesuai.',
             'admin_notes.max' => 'Catatan admin maksimal 1000 karakter.',
+            'admin_notes.prohibited' => 'Hanya admin yang dapat mengatur catatan admin.',
         ];
     }
 
-    /**
-     * Prepare the data for validation.
-     */
     protected function prepareForValidation(): void
     {
-        // Normalize phone number
         if ($this->phone) {
             $this->merge([
                 'phone' => preg_replace('/[^0-9+\-\s()]/', '', $this->phone),
             ]);
         }
 
-        // Trim whitespace
         $this->merge([
             'name' => trim($this->name ?? ''),
             'email' => trim($this->email ?? ''),

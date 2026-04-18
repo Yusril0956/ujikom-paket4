@@ -16,7 +16,6 @@
         </a>
         <h1 class="font-serif text-2xl font-black tracking-[0.15em] text-ink uppercase">Scriptoria</h1>
 
-        {{-- Role Badge - Only show when authenticated --}}
         @if (auth()->check())
             <div class="mt-4 flex justify-center">
                 @if (auth()->user()->isAdmin())
@@ -49,9 +48,7 @@
 
     <nav class="flex-1 overflow-y-auto py-4 sm:py-6">
 
-        @if (auth()->check()) {{-- ═══════════════════════════════════════════════════════ --}}
-            {{-- 1. DASHBOARD (Semua Role) --}}
-            {{-- ═══════════════════════════════════════════════════════ --}}
+        @if (auth()->check())
             @if (auth()->user()->isAnggota())
                 <x-layouts.partials.sidebar-item icon="dashboard" label="Dashboard" :href="route('anggota.dashboard')"
                     :active="request()->routeIs('anggota.dashboard')" />
@@ -59,18 +56,14 @@
                 <x-layouts.partials.sidebar-item icon="dashboard" label="Dashboard" :href="route('admin.dashboard')"
                     :active="request()->routeIs('admin.dashboard')" />
             @endif
-            {{-- ═══════════════════════════════════════════════════════ --}} {{-- 2. SECTION KATALOG (Semua Role) --}} {{-- ═══════════════════════════════════════════════════════ --}} <div
-                class="px-8 mt-8 mb-3 flex items-center gap-2">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-coffee/50 font-serif">I. Katalog
-                    Buku</span>
-                <div class="h-px flex-1 bg-ink/5"></div>
+            class="px-8 mt-8 mb-3 flex items-center gap-2">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-coffee/50 font-serif">I. Katalog
+                Buku</span>
+            <div class="h-px flex-1 bg-ink/5"></div>
             </div>
 
             <x-layouts.partials.sidebar-item icon="book" label="Daftar Buku" :href="route('books.index')" :active="request()->routeIs('books.*')" />
 
-            {{-- ═══════════════════════════════════════════════════════ --}}
-            {{-- 3. SECTION KONTROL (Admin & Petugas) --}}
-            {{-- ═══════════════════════════════════════════════════════ --}}
             @if (auth()->user()->isAdmin() || auth()->user()->isPetugas())
                 <div class="px-8 mt-8 mb-3 flex items-center gap-2">
                     <span class="text-[10px] font-bold uppercase tracking-widest text-red-600/50 font-serif">
@@ -79,17 +72,13 @@
                     <div class="h-px flex-1 bg-ink/5"></div>
                 </div>
 
-                @if (auth()->user()->isAdmin())
-                    <x-layouts.partials.sidebar-item icon="users" label="Data Pengguna" :href="route('admin.users.index')"
-                        :active="request()->routeIs('admin.users.*')" />
-                @endif
+                <x-layouts.partials.sidebar-item icon="users" label="Data Pengguna" :href="route('admin.users.index')"
+                    :active="request()->routeIs('admin.users.*')" />
 
-                {{-- Transaction Management (Admin & Petugas) --}}
                 <x-layouts.partials.sidebar-item icon="receipt" label="Data Transaksi" :href="route('admin.transaksi.index')"
                     :active="request()->routeIs('admin.transaksi.*')" />
             @endif
 
-            {{-- anggota --}}
             @if (auth()->user()->isAnggota())
                 <div class="px-8 mt-8 mb-3 flex items-center gap-2">
                     <span class="text-[10px] font-bold uppercase tracking-widest text-blue-600/50 font-serif">
@@ -124,14 +113,12 @@
 
     <div class="flex-shrink-0 space-y-2 border-t border-ink bg-[#f9f7f1] p-4 sm:p-6">
         @if (auth()->check())
-            {{-- User Profile --}}
             <a href="{{ route('profile.edit') }}"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md group">
                 <x-lucide-circle-user-round class="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                 <span>Profil Pengguna</span>
             </a>
 
-            {{-- Logout --}}
             <form method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
                 <button type="submit"
@@ -141,7 +128,6 @@
                 </button>
             </form>
         @else
-            {{-- Guest Footer --}}
             <a href="{{ route('login') }}"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-serif text-green-600 hover:text-green-700 hover:bg-green-50 transition-all rounded-md group">
                 <x-lucide-log-in class="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />

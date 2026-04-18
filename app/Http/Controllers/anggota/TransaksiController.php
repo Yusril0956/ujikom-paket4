@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
-    /**
-     * Display member's transaction history.
-     */
     public function index(Request $request): View
     {
         $user = Auth::user();
@@ -23,7 +20,6 @@ class TransaksiController extends Controller
             ->with(['book', 'verifiedBy'])
             ->latest();
 
-        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -40,11 +36,20 @@ class TransaksiController extends Controller
         return view('pages.anggota.transaksi', compact('transaksis'));
     }
 
-    /**
-     * Create a borrow request (member initiated).
-     */
     public function borrow(Request $request): RedirectResponse
     {
+        $user = $request->user();
+
+        if (!$user->isAnggota()) {
+            return redirect()->back()
+                ->with('error', 'Hanya anggota yang dapat meminjam buku.');
+        }
+
+        if ($user->status !== 'aktif') {
+            return redirect()->back()
+                ->with('error', 'Anda tidak dapat meminjam buku karena status akun Anda tidak aktif. Hubungi admin.');
+        }
+
         $validated = $request->validate([
             'book_id' => 'required|exists:books,id',
             'notes' => 'nullable|string|max:255',
@@ -56,9 +61,18 @@ class TransaksiController extends Controller
             return redirect()->back()->with('error', 'Buku tidak tersedia. Silakan coba lagi nanti.');
         }
 
+        $activeCount = $user->transaksis()
+            ->whereIn('status', ['dipinjam', 'terlambat'])
+            ->count();
+
+        if ($activeCount >= 4) {
+            return redirect()->back()
+                ->with('error', 'Anda telah mencapai batas maksimal peminjaman (4 buku). Kembalikan beberapa buku terlebih dahulu.');
+        }
+
         try {
             $transaksi = Transaksi::create([
-                'user_id' => $request->user()->id,
+                'user_id' => $user->id,
                 'book_id' => $book->id,
                 'notes' => $validated['notes'] ?? null,
                 'status' => 'pending',
@@ -69,7 +83,7 @@ class TransaksiController extends Controller
                 ->with('success', 'Permintaan peminjaman berhasil dibuat. Tunggu persetujuan dari petugas.');
         } catch (\Illuminate\Database\QueryException $e) {
             Log::error('Transaksi creation failed', [
-                'user_id' => $request->user()->id,
+                'user_id' => $user->id,
                 'book_id' => $book->id,
                 'error' => $e->getMessage()
             ]);
@@ -85,8 +99,14 @@ class TransaksiController extends Controller
 
     public function returnBook(Transaksi $transaksi, Request $request): RedirectResponse
     {
-        if ($transaksi->user_id !== $request->user()->id) {
-            abort(403, 'Akses ditolak.');
+        $user = $request->user();
+
+        if ($transaksi->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengembalikan buku ini.');
+        }
+
+        if (!$user->isAnggota()) {
+            abort(403, 'Hanya anggota yang dapat mengembalikan buku.');
         }
 
         if (!in_array($transaksi->status, ['dipinjam', 'terlambat'])) {
@@ -102,9 +122,6 @@ class TransaksiController extends Controller
         return redirect()->back()->with($success ? 'success' : 'error', $message);
     }
 
-    /**
-     * Show transaction receipt/proof.
-     */
     public function receipt(string $bookingCode): View
     {
         $transaksi = Transaksi::with(['user', 'book', 'verifiedBy'])

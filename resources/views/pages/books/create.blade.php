@@ -1,7 +1,5 @@
 <x-layouts.app>
     <div class="max-w-5xl mx-auto space-y-6 px-2">
-
-        {{-- 1. HEADER PAGE --}}
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-ink pb-5">
             <div>
                 <h1 class="text-2xl font-serif font-bold text-ink tracking-tight">Tambah Buku Baru</h1>
@@ -14,21 +12,17 @@
             </a>
         </div>
 
-        {{-- 2. FORM UTAMA --}}
         <form method="POST" action="{{ route('admin.books.store') }}" enctype="multipart/form-data"
             class="bg-surface border border-ink">
             @csrf
             <div class="p-6 md:p-8 space-y-8">
 
-                {{-- Seksi I: Metadata Dasar --}}
                 <div class="space-y-5">
                     <h2
                         class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
                         <x-lucide-book-open-text class="w-4 h-4 text-coffee" /> I. Metadata Dasar
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                        {{-- Title --}}
                         <div class="md:col-span-2">
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">
                                 Judul Buku <span class="text-red-700">*</span>
@@ -41,7 +35,6 @@
                             @enderror
                         </div>
 
-                        {{-- Author --}}
                         <div>
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">
                                 Pengarang / Penulis <span class="text-red-700">*</span>
@@ -54,7 +47,6 @@
                             @enderror
                         </div>
 
-                        {{-- Publisher --}}
                         <div>
                             <label
                                 class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Penerbit</label>
@@ -66,7 +58,6 @@
                             @enderror
                         </div>
 
-                        {{-- Published Year --}}
                         <div>
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">
                                 Tahun Terbit <span class="text-red-700">*</span>
@@ -79,7 +70,6 @@
                             @enderror
                         </div>
 
-                        {{-- ISBN --}}
                         <div>
                             <label
                                 class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">ISBN</label>
@@ -91,7 +81,6 @@
                             @enderror
                         </div>
 
-                        {{-- ISSN --}}
                         <div>
                             <label
                                 class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">ISSN</label>
@@ -104,7 +93,6 @@
                     </div>
                 </div>
 
-                {{-- Seksi II: Klasifikasi & Lokasi --}}
                 <div class="space-y-5">
                     <h2
                         class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
@@ -112,7 +100,6 @@
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        {{-- Category --}}
                         <div>
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">
                                 Kategori Utama <span class="text-red-700">*</span>
@@ -121,11 +108,16 @@
                                 class="w-full px-4 py-2.5 bg-background border border-ink text-sm font-serif text-ink focus:outline-none focus:ring-1 focus:ring-ink transition-all @error('category') border-red-700 @enderror">
                                 <option value="">-- Pilih Kategori --</option>
                                 <option value="Fiksi" @selected(old('category') == 'Fiksi')>Fiksi & Sastra</option>
-                                <option value="Fiksi - Sastra Indonesia" @selected(old('category') == 'Fiksi - Sastra Indonesia')>Fiksi - Sastra Indonesia</option>
-                                <option value="Sejarah & Antropologi" @selected(old('category') == 'Sejarah & Antropologi')>Sejarah & Antropologi</option>
-                                <option value="Filosofi & Spiritualitas" @selected(old('category') == 'Filosofi & Spiritualitas')>Filosofi & Spiritualitas</option>
-                                <option value="Pengembangan Diri & Bisnis" @selected(old('category') == 'Pengembangan Diri & Bisnis')>Pengembangan Diri & Bisnis</option>
-                                <option value="Psikologi & Sains Kognitif" @selected(old('category') == 'Psikologi & Sains Kognitif')>Psikologi & Sains Kognitif</option>
+                                <option value="Fiksi - Sastra Indonesia" @selected(old('category') == 'Fiksi - Sastra Indonesia')>Fiksi - Sastra
+                                    Indonesia</option>
+                                <option value="Sejarah & Antropologi" @selected(old('category') == 'Sejarah & Antropologi')>Sejarah & Antropologi
+                                </option>
+                                <option value="Filosofi & Spiritualitas" @selected(old('category') == 'Filosofi & Spiritualitas')>Filosofi &
+                                    Spiritualitas</option>
+                                <option value="Pengembangan Diri & Bisnis" @selected(old('category') == 'Pengembangan Diri & Bisnis')>Pengembangan
+                                    Diri & Bisnis</option>
+                                <option value="Psikologi & Sains Kognitif" @selected(old('category') == 'Psikologi & Sains Kognitif')>Psikologi &
+                                    Sains Kognitif</option>
                                 <option value="Sastra" @selected(old('category') == 'Sastra')>Sastra</option>
                             </select>
                             @error('category')
@@ -133,7 +125,6 @@
                             @enderror
                         </div>
 
-                        {{-- Classification --}}
                         <div>
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Klasifikasi
                                 DDC / LCC</label>
@@ -145,7 +136,6 @@
                             @enderror
                         </div>
 
-                        {{-- Location --}}
                         <div>
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Lokasi Rak
                                 / Gudang</label>
@@ -157,7 +147,6 @@
                             @enderror
                         </div>
 
-                        {{-- Availability Status --}}
                         <div>
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">
                                 Status Ketersediaan <span class="text-red-700">*</span>
@@ -177,7 +166,6 @@
                     </div>
                 </div>
 
-                {{-- Seksi III: Sampul & Deskripsi --}}
                 <div class="space-y-5">
                     <h2
                         class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
@@ -185,7 +173,6 @@
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                        {{-- Upload Area --}}
                         <div class="md:col-span-1">
                             <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Sampul
                                 Buku</label>
@@ -207,10 +194,7 @@
                             @enderror
                         </div>
 
-                        {{-- Text Fields --}}
                         <div class="md:col-span-2 space-y-4">
-
-                            {{-- Synopsis --}}
                             <div>
                                 <label
                                     class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Sinopsis
@@ -222,7 +206,6 @@
                                 @enderror
                             </div>
 
-                            {{-- Curator Notes --}}
                             <div>
                                 <label
                                     class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Catatan
@@ -238,7 +221,6 @@
                     </div>
                 </div>
 
-                {{-- Seksi IV: Inventory & Visibility (Opsional) --}}
                 <div class="space-y-5">
                     <h2
                         class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">

@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request): View
     {
         $query = Transaksi::with(['user', 'book', 'verifiedBy']);
@@ -39,9 +36,6 @@ class TransaksiController extends Controller
         return view('pages.admin.transaksi.index', compact('transaksi'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
         $members = User::where('role', 'anggota')
@@ -57,14 +51,23 @@ class TransaksiController extends Controller
         return view('pages.admin.transaksi.create', compact('members', 'availableBooks'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(TransaksiStoreRequest $request): RedirectResponse
     {
         $validated = $request->validated();
 
-        $transaksi = DB::transaction(function () use ($validated) {
+        $user = User::find($validated['user_id']);
+        if ($user->status !== 'aktif') {
+            return redirect()->back()
+                ->with('error', "Anggota '{$user->name}' tidak memiliki status aktif. Ubah status terlebih dahulu.");
+        }
+
+        $activeCount = $user->transaksis()->where('status', 'dipinjam')->count();
+        if ($activeCount >= 4) {
+            return redirect()->back()
+                ->with('error', "Anggota '{$user->name}' telah mencapai batas maksimal peminjaman (4 buku).");
+        }
+
+        $transaksi = DB::transaction(function () use ($validated, $user) {
             $book = Book::lockForUpdate()->find($validated['book_id']);
 
             if ($book->stock_available <= 0) {
@@ -74,28 +77,17 @@ class TransaksiController extends Controller
             $txn = Transaksi::create([
                 'user_id' => $validated['user_id'],
                 'book_id' => $validated['book_id'],
-                'borrowed_date' => $validated['borrowed_date'] ?? null,
-                'due_date' => $validated['due_date'] ?? null,
                 'notes' => $validated['notes'] ?? null,
-                'status' => 'dipinjam',
+                'status' => 'pending',
             ]);
-
-            $book->decrement('stock_available');
-
-            if ($book->stock_available <= 0) {
-                $book->update(['availability_status' => 'dipinjam']);
-            }
 
             return $txn;
         });
 
         return redirect()->route('admin.transaksi.show', $transaksi)
-            ->with('success', 'Pengajuan peminjaman berhasil dibuat.');
+            ->with('success', 'Pengajuan peminjaman berhasil dibuat. Tunggu konfirmasi dari anggota atau ubah status ke dipinjam jika sudah diserahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Transaksi $transaksi): View
     {
         $activityLog = collect([
@@ -115,9 +107,6 @@ class TransaksiController extends Controller
         return view('pages.admin.transaksi.show', compact('transaksi', 'activityLog'));
     }
 
-    /**
-     * Approve a pending transaksi.
-     */
     public function approve(Transaksi $transaksi, Request $request): RedirectResponse
     {
         if ($transaksi->status !== 'pending') {
@@ -133,9 +122,6 @@ class TransaksiController extends Controller
         return redirect()->back()->with('error', 'Gagal menyetujui: cek stok buku atau kuota anggota.');
     }
 
-    /**
-     * Reject a pending transaksi.
-     */
     public function reject(Transaksi $transaksi, Request $request): RedirectResponse
     {
         if ($transaksi->status !== 'pending') {
@@ -152,9 +138,6 @@ class TransaksiController extends Controller
         );
     }
 
-    /**
-     * Process book return.
-     */
     public function returnBook(Transaksi $transaksi): RedirectResponse
     {
         if (!in_array($transaksi->status, ['dipinjam', 'terlambat'])) {
@@ -170,9 +153,6 @@ class TransaksiController extends Controller
         return redirect()->back()->with($success ? 'success' : 'error', $message);
     }
 
-    /**
-     * Show receipt/proof page for member.
-     */
     public function receipt(string $bookingCode): View
     {
         $transaksi = Transaksi::with(['user', 'book'])
@@ -187,10 +167,6 @@ class TransaksiController extends Controller
         return view('pages.admin.transaksi.bukti', compact('transaksi'));
     }
 
-
-    /**
-     * Export transaksis data.
-     */
     public function export(Request $request)
     {
         $transaksis = Transaksi::with(['user', 'book'])

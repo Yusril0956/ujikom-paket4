@@ -13,9 +13,6 @@ use Exception;
 
 class BookController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request): View
     {
         $query = Book::query();
@@ -32,7 +29,11 @@ class BookController extends Controller
             $query->where('availability_status', $request->status);
         }
 
-        $query->publik();
+
+        if (!auth()->check() || (auth()->user()->isAnggota())) {
+            $query->publik();
+        }
+
         $query->withoutTrashed();
 
         $books = $query->orderBy('created_at', 'desc')->paginate(6)->withQueryString();
@@ -40,17 +41,11 @@ class BookController extends Controller
         return view('pages.books.index', compact('books'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
         return view('pages.books.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(BookStoreRequest $request): RedirectResponse
     {
         $validated = $request->validated();
@@ -65,13 +60,10 @@ class BookController extends Controller
 
         Book::create($validated);
 
-        return redirect()->route('books.index')
+        return redirect()->route('admin.books.index')
             ->with('success', 'Buku berhasil ditambahkan ke katalog.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Book $book): View
     {
         // Only allow viewing public books, unless user is admin/petugas
@@ -81,17 +73,11 @@ class BookController extends Controller
         return view('pages.books.show', compact('book'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Book $book): View
     {
         return view('pages.books.edit', compact('book'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(BookStoreRequest $request, Book $book): RedirectResponse
     {
         $validated = $request->validated();
@@ -117,13 +103,10 @@ class BookController extends Controller
         $validated['updated_by'] = auth()->id();
         $book->update($validated);
 
-        return redirect()->route('books.index')
+        return redirect()->route('admin.books.index')
             ->with('success', 'Data buku berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Book $book): RedirectResponse
     {
         if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
@@ -133,18 +116,15 @@ class BookController extends Controller
         $book->update(['deleted_by' => auth()->id()]);
         $book->delete();
 
-        return redirect()->route('books.index')
+        return redirect()->route('admin.books.index')
             ->with('success', 'Buku berhasil dihapus dari katalog.');
     }
 
-    /**
-     * Toggle public visibility.
-     */
     public function toggleVisibility(Book $book): RedirectResponse
     {
         $book->update(['is_public' => !$book->is_public]);
 
-        return redirect()->back()
+        return redirect()->route('admin.books.index')
             ->with('success', 'Visibilitas buku diperbarui.');
     }
 }

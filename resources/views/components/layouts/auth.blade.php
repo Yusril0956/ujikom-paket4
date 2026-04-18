@@ -13,9 +13,7 @@
     <div class="w-full max-w-md">
         {{-- Branding Header --}}
         <div class="text-center mb-8">
-            <x-lucide-book-open class="w-10 h-10 text-ink mx-auto mb-3 stroke-[1.5]" />
-            <h1 class="font-serif text-2xl font-black tracking-[0.2em] text-ink uppercase">Scriptoria</h1>
-            <p class="font-mono text-[10px] uppercase tracking-[0.3em] text-coffee mt-2">Digital Archive System</p>
+            <x-app-logo />
         </div>
 
         {{-- Auth Card --}}

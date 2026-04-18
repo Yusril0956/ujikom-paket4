@@ -1,295 +1,187 @@
 <x-layouts.app>
-    <div class="max-w-4xl mx-auto space-y-6 px-2">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-ink pb-5">
+    <div class="mx-auto max-w-4xl space-y-6 px-2">
+        <div class="flex flex-col justify-between gap-4 border-b border-ink pb-5 md:flex-row md:items-center">
             <div>
-                <h1 class="text-2xl font-serif font-bold text-ink tracking-tight">Edit Data Anggota</h1>
-                <p class="text-muted mt-1 font-serif text-sm">Ubah informasi profil pengguna {{ $user->name }}.</p>
+                <h1 class="text-2xl font-serif font-bold tracking-tight text-ink">Edit Data Anggota</h1>
+                <p class="mt-1 font-serif text-sm text-muted">Ubah informasi profil pengguna {{ $user->name }}.</p>
             </div>
-            <a href="{{ route('admin.users.index') }}"
-                class="w-full md:w-auto px-4 py-2 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md flex items-center justify-center gap-2">
-                <x-lucide-arrow-left class="w-4 h-4" /> Kembali
-            </a>
+            <x-ui.button href="{{ route('admin.users.index') }}" variant="secondary" class="w-full md:w-auto px-4" icon="arrow-left">
+                Kembali
+            </x-ui.button>
         </div>
 
         @if ($errors->any())
-            <div class="bg-red-50 border border-red-300 rounded-md p-4">
-                <div class="flex items-start gap-3">
-                    <x-lucide-alert-circle class="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-red-900 mb-2">Ada kesalahan dalam form:</h3>
-                        <ul class="list-disc list-inside space-y-1 text-sm text-red-800">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <x-ui.alert type="danger" icon="alert-circle" title="Ada kesalahan dalam form:">
+                <ul class="list-disc space-y-1 pl-5 text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </x-ui.alert>
         @endif
 
-        <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data"
-            class="bg-surface border border-ink">
+        <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data" class="border border-ink bg-surface">
             @csrf
             @method('PUT')
-            <div class="p-6 md:p-8 space-y-8">
 
+            <div class="space-y-8 p-6 md:p-8">
                 <div class="space-y-5">
-                    <h2
-                        class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
+                    <h2 class="flex items-center gap-2 border-b border-ink pb-2 text-lg font-serif font-semibold text-ink">
                         <x-lucide-id-card class="w-4 h-4 text-coffee" /> I. Identitas Pengguna
                     </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
-                            <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">ID
-                                Pengguna</label>
-                            <div
-                                class="px-4 py-2.5 bg-[#f4f1eb] border border-ink text-sm font-serif text-muted rounded flex items-center gap-2">
+                            <label class="mb-2 block font-mono text-xs uppercase tracking-wider text-coffee">ID Pengguna</label>
+                            <div class="flex items-center gap-2 rounded border border-ink bg-[#f4f1eb] px-4 py-2.5 font-serif text-sm text-muted">
                                 <x-lucide-lock class="w-4 h-4" />
                                 {{ $user->formatted_id }}
                             </div>
                         </div>
 
                         <div>
-                            <label class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Bergabung
-                                Sejak</label>
-                            <div
-                                class="px-4 py-2.5 bg-[#f4f1eb] border border-ink text-sm font-serif text-muted rounded flex items-center gap-2">
+                            <label class="mb-2 block font-mono text-xs uppercase tracking-wider text-coffee">Bergabung Sejak</label>
+                            <div class="flex items-center gap-2 rounded border border-ink bg-[#f4f1eb] px-4 py-2.5 font-serif text-sm text-muted">
                                 <x-lucide-calendar class="w-4 h-4" />
                                 {{ $user->created_at->format('d M Y H:i') }}
                             </div>
                         </div>
 
-                        <div>
-                            <label for="name"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Nama
-                                Lengkap <span class="text-red-700">*</span></label>
-                            <input type="text" id="name" name="name" placeholder="Masukkan nama lengkap"
-                                class="w-full px-4 py-2.5 bg-background border @error('name') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all"
-                                value="{{ old('name', $user->name) }}" required>
-                            @error('name')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <x-ui.input name="name" label="Nama Lengkap" placeholder="Masukkan nama lengkap" :value="$user->name" required />
+                        <x-ui.input name="email" label="Alamat Email" type="email" placeholder="contoh@domain.com" :value="$user->email" required />
+                        <x-ui.input name="id_number" label="ID / NIM / NIP" placeholder="Contoh: 20230101" :value="$user->id_number" />
 
-                        <div>
-                            <label for="email"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Alamat
-                                Email <span class="text-red-700">*</span></label>
-                            <input type="email" id="email" name="email" placeholder="contoh@domain.com"
-                                class="w-full px-4 py-2.5 bg-background border @error('email') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all"
-                                value="{{ old('email', $user->email) }}" required>
-                            @error('email')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="id_number"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">ID / NIM /
-                                NIP</label>
-                            <input type="text" id="id_number" name="id_number" placeholder="Contoh: 20230101"
-                                class="w-full px-4 py-2.5 bg-background border @error('id_number') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all"
-                                value="{{ old('id_number', $user->id_number) }}">
-                            @error('id_number')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        {{-- Role --}}
-                        <div>
-                            <label for="role"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Role<span
-                                    class="text-red-700">*</span></label>
-                            <select id="role" name="role"
-                                class="w-full px-4 py-2.5 bg-background border @error('role') border-red-500 @else border-ink @enderror text-sm font-serif text-ink focus:outline-none focus:ring-1 focus:ring-ink transition-all"
-                                required>
-                                <option value="">-- Pilih Role --</option>
-                                <option value="anggota" @selected(old('role', $user->role) === 'anggota')>Anggota</option>
-                                @if (auth()->user()->isAdmin())
-                                    <option value="petugas" @selected(old('role', $user->role) === 'petugas')>Petugas</option>
-                                    <option value="admin" @selected(old('role', $user->role) === 'admin')>Admin</option>
-                                @endif
-                            </select>
-                            @error('role')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <x-ui.select name="role" label="Role" required>
+                            <option value="">-- Pilih Role --</option>
+                            <option value="anggota" @selected(old('role', $user->role) === 'anggota')>Anggota</option>
+                            @if (auth()->user()->isAdmin())
+                                <option value="petugas" @selected(old('role', $user->role) === 'petugas')>Petugas</option>
+                                <option value="admin" @selected(old('role', $user->role) === 'admin')>Admin</option>
+                            @endif
+                        </x-ui.select>
                     </div>
                 </div>
 
                 <div class="space-y-5">
-                    <h2
-                        class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
+                    <h2 class="flex items-center gap-2 border-b border-ink pb-2 text-lg font-serif font-semibold text-ink">
                         <x-lucide-phone class="w-4 h-4 text-coffee" /> II. Kontak & Status
                     </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="phone"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Nomor
-                                Telepon</label>
-                            <input type="tel" id="phone" name="phone" placeholder="08xxxxxxxxxx"
-                                class="w-full px-4 py-2.5 bg-background border @error('phone') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all"
-                                value="{{ old('phone', $user->phone) }}">
-                            @error('phone')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="status"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Status
-                                <span class="text-red-700">*</span></label>
-                            <select id="status" name="status"
-                                class="w-full px-4 py-2.5 bg-background border @error('status') border-red-500 @else border-ink @enderror text-sm font-serif text-ink focus:outline-none focus:ring-1 focus:ring-ink transition-all"
-                                required>
-                                <option value="">-- Pilih Status --</option>
-                                <option value="aktif" @selected(old('status', $user->status) === 'aktif')>Aktif</option>
-                                <option value="pending" @selected(old('status', $user->status) === 'pending')>Pending</option>
-                                <option value="nonaktif" @selected(old('status', $user->status) === 'nonaktif')>Nonaktif</option>
-                            </select>
-                            @error('status')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <x-ui.input name="phone" label="Nomor Telepon" type="tel" placeholder="08xxxxxxxxxx" :value="$user->phone" />
+                        <x-ui.select name="status" label="Status" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option value="aktif" @selected(old('status', $user->status) === 'aktif')>Aktif</option>
+                            <option value="pending" @selected(old('status', $user->status) === 'pending')>Pending</option>
+                            <option value="nonaktif" @selected(old('status', $user->status) === 'nonaktif')>Nonaktif</option>
+                        </x-ui.select>
                         <div class="md:col-span-2">
-                            <label for="address"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Alamat
-                                Lengkap</label>
-                            <textarea id="address" name="address" rows="3" placeholder="Masukkan alamat domisili lengkap"
-                                class="w-full px-4 py-2.5 bg-background border @error('address') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all resize-y">{{ old('address', $user->address) }}</textarea>
-                            @error('address')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <x-ui.textarea name="address" label="Alamat Lengkap"
+                                placeholder="Masukkan alamat domisili lengkap" rows="3" :value="$user->address" />
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-                    <h2
-                        class="text-lg font-serif font-semibold text-ink border-b border-blue-200 pb-2 flex items-center gap-2">
+                <div class="rounded-md border border-blue-200 bg-blue-50 p-4">
+                    <h2 class="flex items-center gap-2 border-b border-blue-200 pb-2 text-lg font-serif font-semibold text-ink">
                         <x-lucide-lock class="w-4 h-4 text-coffee" /> III. Keamanan (Opsional)
                     </h2>
-                    <p class="text-xs font-serif text-muted mt-2 mb-4">Kosongkan field password jika tidak ingin
-                        mengubahnya.</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                        <div>
-                            <label for="password"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Password
-                                Baru</label>
-                            <input type="password" id="password" name="password"
-                                placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)"
-                                class="w-full px-4 py-2.5 bg-background border @error('password') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all">
-                            @error('password')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="password_confirmation"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Konfirmasi
-                                Password Baru</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation"
-                                placeholder="Ketik ulang password baru"
-                                class="w-full px-4 py-2.5 bg-background border @error('password') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all">
-                        </div>
+                    <p class="mt-2 mb-4 font-serif text-xs text-muted">Kosongkan field password jika tidak ingin mengubahnya.</p>
+                    <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <x-ui.input name="password" label="Password Baru" type="password"
+                            placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)" />
+                        <x-ui.input name="password_confirmation" label="Konfirmasi Password Baru" type="password"
+                            placeholder="Ketik ulang password baru" />
                     </div>
                 </div>
 
                 <div class="space-y-5">
-                    <h2
-                        class="text-lg font-serif font-semibold text-ink border-b border-ink pb-2 flex items-center gap-2">
+                    <h2 class="flex items-center gap-2 border-b border-ink pb-2 text-lg font-serif font-semibold text-ink">
                         <x-lucide-image class="w-4 h-4 text-coffee" /> IV. Dokumen & Catatan
                     </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                         <div class="md:col-span-1">
-                            <label for="avatar"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Foto
-                                Profil</label>
+                            <label for="avatar" class="mb-2 block font-mono text-xs uppercase tracking-wider text-coffee">
+                                Foto Profil
+                            </label>
 
                             @if ($user->avatar)
                                 <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
-                                    class="w-full border border-ink rounded mb-3 object-cover aspect-square">
-                                <p class="text-xs font-serif text-muted mb-2">Foto profil saat ini</p>
+                                    class="mb-3 aspect-square w-full rounded border border-ink object-cover">
+                                <p class="mb-2 font-serif text-xs text-muted">Foto profil saat ini</p>
                             @endif
 
-                            <div class="border-2 border-dashed border-ink bg-background p-6 flex flex-col items-center justify-center text-center hover:bg-ink/5 transition-colors cursor-pointer group relative"
+                            <div class="group relative flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-ink bg-background p-6 text-center transition-colors hover:bg-ink/5"
                                 id="avatar-drop">
-                                <input type="file" id="avatar" name="avatar" accept="image/*"
-                                    class="hidden">
-                                <x-lucide-upload-cloud
-                                    class="w-8 h-8 text-coffee/60 group-hover:text-ink mb-2 transition-colors" />
-                                <span class="text-xs font-serif text-muted group-hover:text-ink">Klik atau seret</span>
-                                <span class="text-[10px] font-mono text-coffee/50 mt-1">JPG, PNG, WebP (Maks.
-                                    2MB)</span>
+                                <input type="file" id="avatar" name="avatar" accept="image/*" class="hidden">
+                                <x-lucide-upload-cloud class="mb-2 h-8 w-8 text-coffee/60 transition-colors group-hover:text-ink" />
+                                <span class="text-xs font-serif text-muted group-hover:text-ink">Klik atau seret file</span>
+                                <span class="mt-1 font-mono text-[10px] text-coffee/50">JPG, PNG, WebP (Maks. 2MB)</span>
                                 @error('avatar')
-                                    <p class="text-red-600 text-xs mt-2">{{ $message }}</p>
+                                    <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div id="avatar-preview" class="mt-2 hidden">
-                                <img id="avatar-img" src="" alt="Preview"
-                                    class="w-full border border-ink rounded">
+                                <img id="avatar-img" src="" alt="Preview" class="w-full rounded border border-ink">
                             </div>
                         </div>
 
                         <div class="md:col-span-2">
-                            <label for="admin_notes"
-                                class="block font-mono text-xs uppercase tracking-wider text-coffee mb-2">Catatan
-                                Admin</label>
-                            <textarea id="admin_notes" name="admin_notes" rows="5"
-                                placeholder="Tulis catatan internal terkait pengguna ini (opsional)..."
-                                class="w-full px-4 py-2.5 bg-background border @error('admin_notes') border-red-500 @else border-ink @enderror text-sm font-serif text-ink placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-ink transition-all resize-y">{{ old('admin_notes', $user->admin_notes) }}</textarea>
-                            @error('admin_notes')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <x-ui.textarea name="admin_notes" label="Catatan Admin"
+                                placeholder="Tulis catatan internal terkait pengguna ini (opsional)..." rows="5"
+                                :value="$user->admin_notes" />
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            {{-- FOOTER ACTIONS --}}
-            <div
-                class="bg-[#f4f1eb] border-t border-ink px-6 md:px-8 py-5 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
-                <div class="flex gap-3 w-full sm:w-auto">
-                    <a href="{{ route('admin.users.show', $user) }}"
-                        class="flex-1 sm:flex-none px-6 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md text-center">
+            <div class="bg-[#f4f1eb] border-t border-ink px-6 py-5 md:px-8 flex flex-col-reverse items-center justify-between gap-3 sm:flex-row">
+                <div class="flex w-full gap-3 sm:w-auto">
+                    <x-ui.button href="{{ route('admin.users.show', $user) }}" variant="secondary" class="flex-1 px-6 sm:flex-none">
                         Lihat Profil
-                    </a>
-                    <a href="{{ route('admin.users.index') }}"
-                        class="flex-1 sm:flex-none px-6 py-2.5 border border-ink bg-surface text-sm font-serif text-coffee hover:text-ink hover:bg-ink/5 transition-all rounded-md text-center">
+                    </x-ui.button>
+                    <x-ui.button href="{{ route('admin.users.index') }}" variant="secondary" class="flex-1 px-6 sm:flex-none">
                         Batal
-                    </a>
+                    </x-ui.button>
                 </div>
-                <button type="submit"
-                    class="w-full sm:w-auto px-6 py-2.5 bg-ink text-surface border border-ink text-sm font-serif hover:bg-ink/90 transition-all rounded-md flex items-center justify-center gap-2">
-                    <x-lucide-check class="w-4 h-4" /> Simpan Perubahan
-                </button>
+                <x-ui.button type="submit" variant="primary" class="w-full sm:w-auto px-6" icon="check">
+                    Simpan Perubahan
+                </x-ui.button>
             </div>
         </form>
 
-        <div class="border border-ink bg-surface p-4 flex items-start gap-3">
-            <x-lucide-info class="w-5 h-5 text-coffee flex-shrink-0 mt-0.5" />
-            <div class="font-serif text-sm text-muted">
-                <span class="text-ink font-semibold">Catatan Sistem:</span> Perubahan data akan dicatat dengan user
-                yang mengubah dan timestamp. Jika mengubah password, pengguna perlu login ulang dengan password yang
-                baru.
-            </div>
-        </div>
+        <x-ui.alert type="info" title="Catatan Sistem" icon="info">
+            Perubahan data akan dicatat dengan user yang mengubah dan timestamp. Jika mengubah password, pengguna perlu login ulang dengan password yang baru.
+        </x-ui.alert>
     </div>
 
     <script>
-        document.getElementById('avatar').addEventListener('change', function(e) {
+        document.getElementById('avatar')?.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('avatar-img').src = e.target.result;
-                    document.getElementById('avatar-preview').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+            if (!file) return;
+
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+            const maxSize = 2 * 1024 * 1024;
+
+            if (!validTypes.includes(file.type)) {
+                alert('Format file tidak didukung. Gunakan JPG, PNG, atau WebP.');
+                this.value = '';
+                return;
             }
+
+            if (file.size > maxSize) {
+                alert('Ukuran file terlalu besar. Maksimal 2MB.');
+                this.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const avatarPreview = document.getElementById('avatar-preview');
+                if (avatarPreview) {
+                    avatarPreview.classList.remove('hidden');
+                    avatarPreview.querySelector('img').src = event.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
         });
 
         const avatarDrop = document.getElementById('avatar-drop');
@@ -314,10 +206,7 @@
             const dt = e.dataTransfer;
             const files = dt.files;
             document.getElementById('avatar').files = files;
-            const event = new Event('change', {
-                bubbles: true
-            });
-            document.getElementById('avatar').dispatchEvent(event);
+            document.getElementById('avatar').dispatchEvent(new Event('change', { bubbles: true }));
         });
 
         avatarDrop.addEventListener('click', () => {

@@ -1,9 +1,9 @@
 @props(['icon', 'label', 'href', 'active' => false])
 
 <a href="{{ $href }}" @class([
-    'flex items-center gap-4 px-8 py-2.5 transition-colors duration-200 group text-sm font-serif relative border-l-4',
+    'relative flex items-center gap-4 border-l-4 px-8 py-2.5 text-sm font-serif transition-colors duration-200 group',
     'bg-ink/5 text-ink font-bold border-ink' => $active,
-    'text-coffee/80 hover:text-ink hover:bg-ink/5 border-transparent' => !$active,
+    'border-transparent text-coffee/80 hover:bg-ink/5 hover:text-ink' => !$active,
 ])>
     <span @class([
         'transition-colors duration-200',
@@ -32,6 +32,6 @@
     <span class="flex-1 tracking-wide">{{ $label }}</span>
 
     @if ($active)
-        <span class="font-serif text-ink text-lg leading-none opacity-50 relative -top-[1px]">›</span>
+        <span class="relative -top-[1px] font-serif text-lg leading-none text-ink opacity-50">›</span>
     @endif
 </a>

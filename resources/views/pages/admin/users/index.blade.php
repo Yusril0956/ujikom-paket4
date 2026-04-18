@@ -181,6 +181,18 @@
                                                         class="w-4 h-4 text-coffee/70 group-hover:text-red-700" />
                                                 </button>
                                             </form>
+                                        @elseif(auth()->user()->role === 'admin')
+                                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+                                                class="inline"
+                                                onsubmit="return confirm('Hapus data pengguna ini? Data akan dipindahkan ke trash.')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    class="p-1.5 border border-ink rounded hover:bg-red-50 hover:border-red-300 transition-colors group"
+                                                    title="Hapus (Soft Delete)">
+                                                    <x-lucide-trash-2
+                                                        class="w-4 h-4 text-coffee/70 group-hover:text-red-700" />
+                                                </button>
+                                            </form>
                                         @endif
                                     </div>
                                 </td>

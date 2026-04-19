@@ -38,7 +38,7 @@ class BookController extends Controller
 
         $query->withoutTrashed();
 
-        $books = $query->orderBy('created_at', 'desc')->paginate(6)->withQueryString();
+        $books = $query->orderBy('created_at', 'desc')->paginate(16)->withQueryString();
 
         return view('pages.books.index', compact('books'));
     }

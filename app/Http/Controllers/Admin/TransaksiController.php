@@ -32,7 +32,7 @@ class TransaksiController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
-        $transaksi = $query->latest()->paginate(6)->withQueryString();
+        $transaksi = $query->latest()->paginate(12)->withQueryString();
 
 
         return view('pages.admin.transaksi.index', compact('transaksi'));

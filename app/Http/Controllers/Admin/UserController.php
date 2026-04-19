@@ -212,7 +212,7 @@ class UserController extends Controller
             $query->search($request->search);
         }
 
-        $users = $query->paginate(5)->withQueryString();
+        $users = $query->paginate(12)->withQueryString();
 
         return view('pages.admin.users.trashed', compact('users'));
     }

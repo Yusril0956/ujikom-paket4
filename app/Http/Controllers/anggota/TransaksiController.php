@@ -31,7 +31,7 @@ class TransaksiController extends Controller
             });
         }
 
-        $transaksis = $query->paginate(15)->withQueryString();
+        $transaksis = $query->paginate(12)->withQueryString();
 
         return view('pages.anggota.transaksi', compact('transaksis'));
     }

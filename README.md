@@ -1,416 +1,259 @@
-# Ujikom Paket 4 - Sistem Manajemen Peminjaman Buku
+# Scriptoria
 
-<p align="center">
-  <strong>Aplikasi web untuk manajemen data buku dan transaksi peminjaman</strong>
-</p>
+[![Repository](https://img.shields.io/badge/Repository-GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Yusril0956/ujikom-paket4)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Scriptoria-16A34A?style=flat-square&logo=laravel&logoColor=white)](https://scriptoria.free.laravel.cloud/)
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.4%2B-777BB4?style=flat-square&logo=php&logoColor=white)](https://www.php.net/)
+[![License](https://img.shields.io/badge/License-MIT-0EA5E9?style=flat-square)](https://opensource.org/licenses/MIT)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel" alt="Laravel 12">
-  <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php" alt="PHP 8.2+">
-  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
-</p>
+Scriptoria adalah aplikasi web Laravel untuk digital archive dan library management. Sistem ini mencakup katalog buku, peminjaman berbasis booking code, verifikasi petugas, pengembalian, denda keterlambatan, export laporan, serta manajemen user berbasis role.
 
----
+Repository: https://github.com/Yusril0956/ujikom-paket4.git
 
-## 📋 Daftar Isi
+Demo online: https://scriptoria.free.laravel.cloud/
 
-- [Tentang Proyek](#tentang-proyek)
+## Table of Contents
+
+- [Ikhtisar](#ikhtisar)
 - [Fitur Utama](#fitur-utama)
-- [Prasyarat Sistem](#prasyarat-sistem)
+- [Tumpukan Teknologi](#tumpukan-teknologi)
+- [Struktur Akses](#struktur-akses)
+- [Prasyarat](#prasyarat)
 - [Instalasi](#instalasi)
-- [Konfigurasi](#konfigurasi)
-- [Database](#database)
-- [Menjalankan Aplikasi](#menjalankan-aplikasi)
-- [Testing](#testing)
+- [Konfigurasi Environment](#konfigurasi-environment)
+- [Akun Demo](#akun-demo)
+- [Route Penting](#route-penting)
+- [Perintah Operasional](#perintah-operasional)
 - [Struktur Proyek](#struktur-proyek)
-- [Teknologi yang Digunakan](#teknologi-yang-digunakan)
-- [Kontribusi](#kontribusi)
+- [Deployment](#deployment)
+- [Lisensi](#lisensi)
 
----
+## Ikhtisar
 
-## 📚 Tentang Proyek
+Proyek ini dibangun dengan Laravel 12 dan berfokus pada workflow perpustakaan berikut:
 
-Ujikom Paket 4 adalah aplikasi web yang dibangun dengan **Laravel 12** untuk mengelola sistem peminjaman buku. Aplikasi ini dirancang untuk memudahkan perpustakaan atau toko buku dalam mencatat data buku, anggota, dan transaksi peminjaman.
+- Public catalog untuk buku yang ditandai `is_public`
+- Peminjaman buku dengan status `pending`, `dipinjam`, `dikembalikan`, `terlambat`, `ditolak`, dan `expired`
+- Batas pinjam 4 buku per anggota aktif
+- Masa pinjam 7 hari dan pickup deadline 24 jam untuk request yang masih `pending`
+- Denda keterlambatan sebesar Rp 1.000 per hari
+- Soft delete untuk `User`, `Book`, dan `Transaksi`
+- Export data ke file `.xlsx`
+- Dashboard terpisah untuk anggota dan staff
 
----
+## Fitur Utama
 
-## ✨ Fitur Utama
+- Katalog buku publik dengan pencarian berdasarkan title, author, ISBN, dan publisher
+- Detail buku dengan kontrol visibilitas untuk admin dan petugas
+- Registrasi, login, reset password, dan email verification melalui Laravel Breeze
+- Dashboard anggota untuk melihat transaksi aktif, pending, dan riwayat
+- Workflow peminjaman oleh anggota melalui booking code
+- Approval, rejection, dan return processing oleh admin atau petugas
+- Manajemen pengguna dengan role `admin`, `petugas`, dan `anggota`
+- Manajemen buku dengan cover upload, stock control, dan toggle visibilitas publik
+- Export laporan buku, pengguna, dan transaksi dalam format XLSX
+- Command console untuk sinkronisasi status transaksi `pending` dan `dipinjam`
 
-- 👥 **Manajemen Pengguna** - Sistem autentikasi dengan role (anggota, petugas)
-- 📖 **Manajemen Buku** - CRUD lengkap untuk data buku dengan cover image
-- 📝 **Transaksi Peminjaman** - Pencatatan transaksi peminjaman dan pengembalian buku
-- 🔐 **Sistem Keamanan** - Middleware dan authorization untuk keamanan data
-- 📱 **UI/UX Modern** - Interface responsif dengan Tailwind CSS dan Alpine.js
-- 🧪 **Testing** - Unit dan feature testing dengan Pest Framework
-- ⚡ **Fast Development** - Vite untuk development server yang cepat
+## Tumpukan Teknologi
 
----
+- Backend: Laravel 12
+- Bahasa: PHP 8.4+
+- Frontend rendering: Blade
+- Asset pipeline: Vite
+- Styling: Tailwind CSS 4
+- Auth scaffolding: Laravel Breeze
+- Test stack: Pest
+- Export format: XLSX berbasis `ZipArchive`
+- Ikon: `mallardduck/blade-lucide-icons`
 
-## 🖥️ Prasyarat Sistem
+## Struktur Akses
 
-Sebelum menjalankan proyek, pastikan sistem Anda memiliki:
+| Role | Akses Utama |
+| --- | --- |
+| Public | Home, About, Rules, dan public book catalog |
+| Anggota | Dashboard anggota, ajukan peminjaman, lihat receipt, lihat transaksi, return request, profile |
+| Admin | Dashboard admin, manage user, manage book, manage transaksi, export data |
+| Petugas | Akses operasional seperti admin, dengan pembatasan pada beberapa aksi user |
 
-- **PHP** 8.2 atau lebih tinggi
-- **Composer** (package manager PHP)
-- **Node.js** 18+ dan **npm** atau **yarn**
-- **Database**: MySQL 5.7+ atau MariaDB
-- **Git** (untuk cloning repository)
-- **Laragon** (opsional, untuk local development)
+Catatan implementasi:
 
----
+- Route admin berada di prefix `/admin`
+- Route anggota berada di prefix `/anggota`
+- Aplikasi ini menggunakan web routes, bukan public API
 
-## 📦 Instalasi
+## Prasyarat
 
-### 1. Clone Repository
+- PHP 8.4 atau lebih baru
+- Composer
+- Node.js dan npm
+- Extension PHP `ext-zip`
+- Extension PHP `ext-gd`
+- Database engine sesuai konfigurasi `.env`
+
+Default environment pada repository ini menggunakan SQLite.
+
+## Instalasi
+
+1. Clone repository.
+
+   ```bash
+   git clone https://github.com/Yusril0956/ujikom-paket4.git
+   cd ujikom-paket4
+   ```
+
+2. Install dependency PHP dan JavaScript.
+
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. Siapkan file environment.
+
+   ```bash
+   copy .env.example .env
+   php artisan key:generate
+   ```
+
+4. Pastikan database tersedia.
+
+   - Jika memakai SQLite, pastikan file `database/database.sqlite` ada dan writable.
+   - Jika memakai MySQL atau PostgreSQL, sesuaikan konfigurasi di `.env`.
+
+5. Jalankan migration dan seeder.
+
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. Buat symbolic link untuk storage public.
+
+   ```bash
+   php artisan storage:link
+   ```
+
+7. Jalankan aplikasi untuk development.
+
+   ```bash
+   composer run dev
+   ```
+
+   Script ini menjalankan `php artisan serve`, `php artisan queue:listen --tries=1`, dan `npm run dev` secara paralel.
+
+## Konfigurasi Environment
+
+Variabel berikut penting untuk operasi aplikasi:
+
+| Variabel | Nilai Default | Catatan |
+| --- | --- | --- |
+| `APP_URL` | `http://localhost` | Sesuaikan dengan domain lokal atau produksi |
+| `DB_CONNECTION` | `sqlite` | Default repository |
+| `SESSION_DRIVER` | `database` | Membutuhkan tabel session |
+| `CACHE_STORE` | `database` | Cache disimpan di database |
+| `QUEUE_CONNECTION` | `database` | Queue worker dibutuhkan |
+| `FILESYSTEM_DISK` | `local` | Upload tetap memakai disk `public` di code |
+
+Konten file upload yang digunakan aplikasi:
+
+- Cover buku: `storage/app/public/books/covers`
+- Avatar user: `storage/app/public/avatars`
+- Asset seed cover dapat berada di `public/images_covers`
+
+## Akun Demo
+
+Seeder menambahkan akun contoh berikut:
+
+| Nama | Email | Password | Role | Status |
+| --- | --- | --- | --- | --- |
+| Ryl | `ryl@perpustakaan.com` | `password` | admin | aktif |
+| Zenki | `zenki@perpustakaan.com` | `password` | petugas | aktif |
+| Eserel | `eserel@perpustakaan.com` | `password` | anggota | aktif |
+| Alya Rahmawati | `alya@email.com` | `password` | anggota | aktif |
+| Dimas Pratama | `dimas@email.com` | `password123` | anggota | aktif |
+| Eka Salsabila | `eka@email.com` | `password123` | anggota | nonaktif |
+| Fina Maulida | `fina@email.com` | `password123` | anggota | aktif |
+
+Gunakan akun admin atau petugas untuk menguji modul manajemen, dan akun anggota untuk menguji workflow peminjaman.
+
+## Route Penting
+
+| Path | Middleware | Fungsi |
+| --- | --- | --- |
+| `/` | public | Landing page Scriptoria |
+| `/about` | public | Informasi aplikasi |
+| `/rules` | public | Tata tertib perpustakaan |
+| `/books` | public/auth | Katalog buku |
+| `/books/{book}` | public/auth | Detail buku |
+| `/transaksi-bukti/{bookingCode}` | `auth` | Receipt peminjaman |
+| `/login` dan `/register` | guest | Autentikasi |
+| `/profile` | `auth` | Profile management |
+| `/anggota/dashboard` | `auth` | Dashboard anggota |
+| `/anggota/transaksi` | `auth` | Riwayat transaksi anggota |
+| `/admin/dashboard` | `auth`, `role:admin,petugas` | Dashboard staff |
+| `/admin/users` | `auth`, `role:admin,petugas` | User management |
+| `/admin/books` | `auth`, `role:admin,petugas` | Book management |
+| `/admin/transaksi` | `auth`, `role:admin,petugas` | Transaction management |
+
+## Perintah Operasional
 
 ```bash
-git clone <repository-url>
-cd ujikom-paket4
-```
-
-### 2. Install Dependencies PHP
-
-```bash
-composer install
-```
-
-### 3. Install Dependencies JavaScript
-
-```bash
-npm install
-```
-
-### 4. Buat File Environment
-
-```bash
-cp .env.example .env
-```
-
-### 5. Generate Application Key
-
-```bash
-php artisan key:generate
-```
-
----
-
-## ⚙️ Konfigurasi
-
-### Konfigurasi Database
-
-Edit file `.env` dan sesuaikan konfigurasi database:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=ujikom_paket4
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### Konfigurasi Aplikasi Lainnya
-
-Sesuaikan konfigurasi lainnya di file `.env` sesuai kebutuhan:
-
-```env
-APP_NAME="Ujikom Paket 4"
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://localhost
-```
-
----
-
-## 🗄️ Database
-
-### Membuat Database
-
-```bash
-php artisan migrate
-```
-
-Perintah di atas akan membuat semua tabel yang diperlukan:
-- `users` - Data pengguna
-- `books` - Data buku
-- `transaksis` - Data transaksi peminjaman
-
-### Mengisi Data Dummy (Seeding)
-
-Untuk mengisi database dengan data dummy untuk testing:
-
-```bash
-php artisan db:seed
-```
-
-Ini akan menjalankan seeders untuk:
-- User (anggota dan petugas)
-- Book (data buku)
-- Transaksi (data peminjaman)
-
----
-
-## 🚀 Menjalankan Aplikasi
-
-### Development Server
-
-Jalankan Vite development server untuk asset compilation:
-
-```bash
-npm run dev
-```
-
-Pada terminal lain, jalankan Laravel development server:
-
-```bash
-php artisan serve
-```
-
-Aplikasi akan berjalan di `http://localhost:8000`
-
-### Production Build
-
-Untuk build production:
-
-```bash
+php artisan migrate --seed
+php artisan storage:link
+php artisan transaksi:update-status
+php artisan test
 npm run build
 ```
 
----
+- `php artisan transaksi:update-status` menandai transaksi `pending` yang melewati pickup deadline menjadi `expired`
+- Command yang sama juga menandai transaksi aktif yang melewati due date menjadi `terlambat`
+- Untuk produksi, jalankan command tersebut melalui scheduler atau cron sesuai kebutuhan operasional
 
-## 🧪 Testing
+## Struktur Proyek
 
-### Menjalankan Semua Tests
+- `app/Http/Controllers/Admin` - controller untuk user, book, dan transaksi
+- `app/Http/Controllers/anggota` - controller untuk alur anggota
+- `app/Console/Commands` - command sinkronisasi status transaksi
+- `app/Models` - model `User`, `Book`, dan `Transaksi`
+- `database/migrations` - definisi tabel dan relasi
+- `database/seeders` - data awal untuk user, buku, dan transaksi
+- `resources/views/pages` - halaman publik, auth, dashboard, dan panel admin
+- `resources/views/components` - komponen Blade reusable
+- `routes` - pemisahan route `public`, `auth`, `anggota`, dan `petugas`
 
-```bash
-php artisan test
-```
+## Deployment
 
-### Menjalankan Test Spesifik
+Checklist minimum untuk production:
 
-```bash
-php artisan test tests/Feature/ExampleTest.php
-```
+1. Set `APP_URL` ke domain yang benar.
+2. Install dependency dengan mode production.
 
-### Dengan Parallel Testing
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   npm ci
+   npm run build
+   ```
 
-```bash
-php artisan test --parallel
-```
+3. Jalankan migration.
 
-Proyek menggunakan **Pest Framework** untuk testing yang lebih expressive dan intuitif.
+   ```bash
+   php artisan migrate --force
+   ```
 
----
+4. Aktifkan storage link.
 
-## 📁 Struktur Proyek
+   ```bash
+   php artisan storage:link
+   ```
 
-```
-ujikom-paket4/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/      # Business logic controllers
-│   │   ├── Middleware/       # Custom middleware
-│   │   └── Requests/         # Form request validation
-│   ├── Models/
-│   │   ├── User.php         # Model user
-│   │   ├── Book.php         # Model buku
-│   │   └── Transaksi.php    # Model transaksi
-│   └── Providers/            # Service providers
-├── database/
-│   ├── migrations/           # Database migrations
-│   ├── seeders/             # Database seeders
-│   └── factories/           # Model factories
-├── resources/
-│   ├── views/               # Blade templates
-│   ├── css/                 # Stylesheet
-│   └── js/                  # JavaScript files
-├── routes/
-│   ├── web.php              # Web routes
-│   ├── auth.php             # Auth routes
-│   ├── anggota.php          # Member routes
-│   ├── petugas.php          # Officer routes
-│   └── public.php           # Public routes
-├── tests/                    # Test files
-├── config/                   # Configuration files
-├── storage/                  # Storage files
-├── public/                   # Public assets
-│   └── images_covers/       # Book cover images
-└── vendor/                   # Dependencies
-```
+5. Pastikan queue worker berjalan jika `QUEUE_CONNECTION=database`.
+6. Daftarkan `php artisan transaksi:update-status` pada cron atau scheduler.
+7. Arahkan document root web server ke folder `public`.
 
----
+Demo yang tersedia saat ini berjalan di Laravel Cloud:
 
-## 🛠️ Teknologi yang Digunakan
+https://scriptoria.free.laravel.cloud/
 
-### Backend
-- **Laravel 12** - PHP web framework
-- **Eloquent ORM** - Database abstraction
-- **Laravel Breeze** - Authentication scaffolding
-- **Pest** - Testing framework
+## Lisensi
 
-### Frontend
-- **Blade** - Template engine
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **Alpine.js** - Lightweight JavaScript framework
-- **Vite** - Build tool dan dev server
+Proyek ini menggunakan lisensi MIT.
 
-### Database
-- **MySQL/MariaDB** - Relational database
-
-### Tools
-- **Composer** - PHP package manager
-- **npm** - JavaScript package manager
-- **Artisan** - Laravel command-line tool
-- **Laragon** - Local development environment
-
----
-
-## 📖 Models & Database
-
-### User
-Menyimpan data pengguna dengan role (member/petugas):
-```php
-- id
-- name
-- email
-- password
-- role
-- timestamps
-```
-
-### Book
-Menyimpan data buku:
-```php
-- id
-- title
-- author
-- isbn
-- publisher
-- year
-- cover_image
-- total_copies
-- available_copies
-- timestamps
-```
-
-### Transaksi
-Merekam transaksi peminjaman dan pengembalian:
-```php
-- id
-- user_id
-- book_id
-- borrow_date
-- return_date
-- due_date
-- status
-- timestamps
-```
-
----
-
-## 🔗 Routes
-
-### Public Routes
-- `GET /` - Halaman home
-- `GET /books` - Daftar buku
-
-### Auth Routes
-- `POST /login` - Login
-- `POST /register` - Register
-- `POST /logout` - Logout
-
-### Member Routes (anggota.php)
-- `GET /dashboard` - Dashboard anggota
-- `GET /borrows` - Riwayat peminjaman
-
-### Officer Routes (petugas.php)
-- `GET /dashboard` - Dashboard petugas
-- `GET /books` - Manajemen buku
-- `POST /books` - Tambah buku
-- `GET /transaksis` - Manajemen transaksi
-
----
-
-## 💡 Tips Development
-
-### Artisan Commands yang Berguna
-
-```bash
-# Membuat migration baru
-php artisan make:migration create_table_name
-
-# Membuat model dengan factory dan migration
-php artisan make:model ModelName -mf
-
-# Membuat controller
-php artisan make:controller ControllerName
-
-# List semua routes
-php artisan route:list
-
-# Optimize untuk production
-php artisan optimize
-
-# Clear cache
-php artisan cache:clear
-php artisan config:clear
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Permission Denied pada storage/logs
-```bash
-chmod -R 775 storage/
-chmod -R 775 bootstrap/cache/
-```
-
-### Database connection error
-- Pastikan MySQL running
-- Cek konfigurasi `.env`
-- Jalankan `php artisan migrate`
-
-### Node modules tidak terinstall
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
----
-
-## 📝 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
----
-
-## 👤 Autor
-
-Dibuat untuk ujikom paket 4
-
----
-
-## 📞 Dukungan
-
-Jika menemukan issue atau bug, silakan buka [issue](../../issues) di repository ini.
-
----
-
-**Happy Coding! 🚀****
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

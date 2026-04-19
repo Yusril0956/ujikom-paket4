@@ -14,8 +14,8 @@
             @csrf
             <div class="space-y-8 p-6 md:p-8">
                 <div>
-                    <x-ui.select name="user_id" label="Cari / Pilih Anggota" required>
-                        <option value="">-- Ketik nama atau ID anggota --</option>
+                    <x-ui.select name="user_id" label="Pilih Anggota" required>
+                        <option value="">-- Pilih nama atau ID anggota --</option>
                         @foreach ($members as $member)
                             <option value="{{ $member->id }}" @selected(old('user_id') == $member->id)>
                                 USR-{{ str_pad($member->id, 3, '0', STR_PAD_LEFT) }} | {{ $member->name }}
@@ -25,8 +25,8 @@
                 </div>
 
                 <div>
-                    <x-ui.select name="book_id" label="Cari / Pilih Buku" required>
-                        <option value="">-- Ketik judul, ISBN, atau ID buku --</option>
+                    <x-ui.select name="book_id" label="Pilih Buku" required>
+                        <option value="">-- Pilih judul, ISBN, atau ID buku --</option>
                         @foreach ($availableBooks as $book)
                             <option value="{{ $book->id }}" @selected(old('book_id') == $book->id)>
                                 BK-{{ str_pad($book->id, 4, '0', STR_PAD_LEFT) }} | {{ $book->title }} ({{ $book->author }})
